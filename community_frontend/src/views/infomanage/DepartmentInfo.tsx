@@ -20,7 +20,7 @@ import {
   GridToolbarContainer,
 } from "@mui/x-data-grid";
 import { randomId } from "@mui/x-data-grid-generator";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import Department from "../../types/Department";
 import ShowDepartment from "../../components/Modals/ShowDepartment";
@@ -31,6 +31,7 @@ import axios from "../../api";
 import { useAuthState } from "../../context/auth";
 import { redirect, useNavigate } from "react-router";
 import { Avatar } from "@mui/joy";
+import { UserStoreContext } from "../../store/UserStore";
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -74,7 +75,7 @@ const FullFeaturedCrudGrid = () => {
       return {
         id: deparment.id,
         img: deparment.imgUrl,
-        owner: deparment.owner.name,
+        owner: deparment.owner?.name || "",
         description: deparment.description,
         title: deparment.title,
         name: deparment.name,
@@ -121,7 +122,7 @@ const FullFeaturedCrudGrid = () => {
         return {
           id: deparment.id,
           img: deparment.imgUrl,
-          owner: deparment.owner.name,
+          owner: deparment.owner?.name || "",
           description: deparment.description,
           title: deparment.title,
           name: deparment.name,
@@ -358,6 +359,7 @@ const FullFeaturedCrudGrid = () => {
         title={selectedDepartmentData?.title || ""}
         onDataUpdate={handleDataUpdate}
         img={selectedDepartmentData?.imgUrl || ""}
+        headerId={selectedDepartmentData?.owner?.id || null}
       />
       <AddDepartment
         open={addDepartmentModal}
@@ -372,9 +374,12 @@ const FullFeaturedCrudGrid = () => {
 };
 
 function DepartmentInfo() {
-  const { user, authenticated } = useAuthState();
+  // const { user, authenticated } = useAuthState();
+  const { user, authenticated } = useContext(UserStoreContext);
   const navigate = useNavigate();
-  if (!authenticated) navigate("/login");
+  useEffect(() => {
+    if (!authenticated) navigate("/login");
+  }, []);
 
   return (
     <>

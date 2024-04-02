@@ -358,6 +358,7 @@ export default function Header(props: any) {
               onClick={() => {
                 signOut(userDispatch);
                 navigate("/login");
+                userStore.logout();
               }}
             >
               Sign Out

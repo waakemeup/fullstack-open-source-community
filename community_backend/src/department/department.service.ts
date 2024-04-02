@@ -119,8 +119,13 @@ export class DepartmentService {
       //   .returning('*')
       //   .updateEntity(true)
       //   .execute();
+      const { userId, description, name, title } = data;
+      const header = await this.userService.getById(userId);
       await this.departmentRepository.update(id, {
-        ...data,
+        name,
+        title,
+        description,
+        owner: header,
       });
 
       return this.departmentRepository.findOneOrFail({ id });

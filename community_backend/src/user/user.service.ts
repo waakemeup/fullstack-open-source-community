@@ -119,7 +119,7 @@ export class UserService {
         .leftJoinAndSelect('user.ownDepartment', 'ownDepartment')
         .where('user.level = :level', { level: LevelEnum.HEADER })
         .andWhere('ownDepartment.id IS NULL')
-        .select(['user.id'])
+        // .select(['user.id'])
         .getMany();
       return aviHeaderUsers;
     } catch (error) {

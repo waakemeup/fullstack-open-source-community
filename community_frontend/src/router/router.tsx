@@ -7,6 +7,7 @@ import PostInfo from "../views/infomanage/PostInfo";
 import Login from "../views/login/Login";
 import SignUp from "../views/signup/SignUp";
 import { useAuthState } from "../context/auth";
+import StuMain from "../views/stuViews/main/StuMain";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));
@@ -50,6 +51,14 @@ const router = createBrowserRouter([
         path: "department",
       },
     ],
+  },
+  {
+    element: (
+      <Layout>
+        <StuMain />
+      </Layout>
+    ),
+    path: "/stu/dashboard",
   },
 ]);
 

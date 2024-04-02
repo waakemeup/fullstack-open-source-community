@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Header from "./Header/Header";
 import Sidebar from "./Sidebar/Sidebar";
 
@@ -13,12 +13,14 @@ import {
   mdiTwitter as TwitterIcon,
 } from "@mdi/js";
 import Icon from "@mdi/react";
+import { UserStoreContext } from "../store/UserStore";
 
 interface Props {
   children: JSX.Element;
 }
 
 const Layout: React.FC<Props> = ({ children }) => {
+  const userStore = useContext(UserStoreContext);
   let classes = useStyles();
   let layoutState = useLayoutState();
 
@@ -26,7 +28,7 @@ const Layout: React.FC<Props> = ({ children }) => {
     <div className={classes.root}>
       <>
         <Header />
-        <Sidebar />
+        {!userStore.isUserAndStudent && <Sidebar />}
         <div
           className={classNames(classes.content, {
             [classes.contentShift]: layoutState.isSidebarOpened,

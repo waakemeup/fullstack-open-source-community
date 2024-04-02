@@ -8,16 +8,17 @@ import {
   Input,
   Modal,
   ModalDialog,
+  Option,
+  Select,
   Stack,
 } from "@mui/joy";
-import React, { useEffect, useState } from "react";
-import axios from "../../api";
-import useSWR from "swr";
-import { message } from "mui-message";
-import Department from "../../types/Department";
-import { Button as MButton } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
+import { message } from "mui-message";
+import React, { useEffect, useState } from "react";
+import useSWR from "swr";
+import axios from "../../api";
+import Department from "../../types/Department";
+import { User } from "../../types/User";
 import ImageUpload from "../ImageUploader/ImageUploader";
 
 interface Props {
@@ -30,6 +31,7 @@ interface Props {
   onDataUpdate: (updatedRows: any) => void;
   img: string;
   // parentMutate: Function;
+  headerId: number | null;
 }
 
 const fetcher = async (url: string, data: any) => {
@@ -62,19 +64,23 @@ const EditDepartment: React.FC<Props> = ({
   id,
   img,
   onDataUpdate,
+  headerId,
 }) => {
   const [curName, setCurName] = useState<string>(name);
   const [curTitle, setCurTitle] = useState<string>(title);
   const [curDescription, setCurDescription] = useState<string>(description);
   const [curId, setCurId] = useState<number>(id);
   const [isPost, setIsPost] = useState<Boolean>(false);
+  const [curHeaderId, setCurHeaderId] = useState<number | null>(headerId);
+  console.log("headerId:" + headerId);
 
   useEffect(() => {
     setCurName(name);
     setCurTitle(title);
     setCurDescription(description);
     setCurId(id);
-  }, [name, title, description, id]);
+    setCurHeaderId(headerId);
+  }, [name, title, description, id, headerId]);
 
   const { data, error, mutate } = useSWR(
     curId ? `department/update/${curId}` : "",
@@ -83,6 +89,7 @@ const EditDepartment: React.FC<Props> = ({
         name: curName,
         title: curTitle,
         description: curDescription,
+        userId: curHeaderId,
       }),
     { suspense: true }
   );
@@ -101,7 +108,7 @@ const EditDepartment: React.FC<Props> = ({
       return {
         id: deparment.id,
         img: deparment.imgUrl,
-        owner: deparment.owner.name,
+        owner: deparment.owner?.name || "",
         description: deparment.description,
         title: deparment.title,
         name: deparment.name,
@@ -114,7 +121,7 @@ const EditDepartment: React.FC<Props> = ({
         return {
           id: deparment.id,
           img: deparment.imgUrl,
-          owner: deparment.owner.name,
+          owner: deparment.owner?.name || "",
           description: deparment.description,
           title: deparment.title,
           name: deparment.name,
@@ -122,6 +129,17 @@ const EditDepartment: React.FC<Props> = ({
       }) || [];
     onDataUpdate(updatedRows);
   }, [isPost]);
+
+  const { data: headerData, mutate: aviHeaderMutate } =
+    useSWR<User[]>(`user/aviheaders`);
+
+  const handleHeaderId = (
+    event: React.SyntheticEvent | null,
+    newValue: number | null
+  ) => {
+    console.log(newValue);
+    setCurHeaderId(newValue);
+  };
 
   return (
     <>
@@ -144,7 +162,7 @@ const EditDepartment: React.FC<Props> = ({
                   return {
                     id: deparment.id,
                     img: deparment.imgUrl,
-                    owner: deparment.owner.name,
+                    owner: deparment.owner?.name || "",
                     description: deparment.description,
                     title: deparment.title,
                     name: deparment.name,
@@ -195,6 +213,18 @@ const EditDepartment: React.FC<Props> = ({
                   value={curDescription}
                   onChange={(e) => setCurDescription(e.target.value)}
                 />
+              </FormControl>
+              <FormControl>
+                <FormLabel>选择社长</FormLabel>
+                <Select onChange={handleHeaderId}>
+                  {headerData?.map((header) => {
+                    return (
+                      <Option key={header.id} value={header.id}>
+                        {header.name}
+                      </Option>
+                    );
+                  })}
+                </Select>
               </FormControl>
               <Box
                 sx={{

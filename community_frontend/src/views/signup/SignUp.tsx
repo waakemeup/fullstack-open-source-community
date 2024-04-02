@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import RoleEnum from "../../types/enums/RoleEnum";
 import LevelEnum from "../../types/enums/LevelEnum";
 import { useAuthDispatch, useAuthState } from "../../context/auth";
@@ -24,6 +24,7 @@ import { useNavigate } from "react-router";
 import { message } from "mui-message";
 import axios from "../../api";
 import { AxiosResponse } from "axios";
+import { UserStoreContext } from "../../store/UserStore";
 
 interface SignUpProps {}
 
@@ -40,9 +41,13 @@ const SignUp: React.FC<SignUpProps> = () => {
   const dispatch = useAuthDispatch();
   const { authenticated } = useAuthState();
 
+  const userStore = useContext(UserStoreContext);
+
   useEffect(() => {
     if (authenticated) {
-      navigate("/auth");
+      !userStore.isUserAndStudent
+        ? navigate("/app/dashboard")
+        : navigate("/stu/dashboard");
     }
   });
 
@@ -62,10 +67,15 @@ const SignUp: React.FC<SignUpProps> = () => {
 
       console.log(res);
       dispatch("REGISTER", res.data);
-      navigate("/auth");
+      userStore.login(res.data?.user);
+      navigate(
+        !userStore.isUserAndStudent ? "/app/dashboard" : "/stu/dashboard"
+      );
       if (res.status === 201) {
         message.success("注册成功");
-        navigate("/auth");
+        navigate(
+          !userStore.isUserAndStudent ? "/app/dashboard" : "/stu/dashboard"
+        );
       } else message.error("注册失败");
     } catch (error) {
       message.error("注册失败");

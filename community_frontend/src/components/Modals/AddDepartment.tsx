@@ -8,6 +8,8 @@ import {
   Input,
   Modal,
   ModalDialog,
+  Option,
+  Select,
   Stack,
 } from "@mui/joy";
 import React, { useEffect, useState } from "react";
@@ -15,6 +17,7 @@ import axios from "../../api";
 import useSWR from "swr";
 import { message } from "mui-message";
 import Department from "../../types/Department";
+import { User } from "../../types/User";
 
 interface Props {
   open: boolean;
@@ -49,6 +52,7 @@ const AddDepartment: React.FC<Props> = ({
   const [curDescription, setCurDescription] = useState<string>(description);
   // const [curId, setCurId] = useState<number>(id);
   const [isPost, setIsPost] = useState<Boolean>(false);
+  const [headerId, setHeaderId] = useState<number | null>(null);
 
   useEffect(() => {
     setCurName(name);
@@ -71,7 +75,7 @@ const AddDepartment: React.FC<Props> = ({
       return {
         id: deparment.id,
         img: deparment.imgUrl,
-        owner: deparment.owner.name,
+        owner: deparment.owner?.name || "",
         description: deparment.description,
         title: deparment.title,
         name: deparment.name,
@@ -84,7 +88,7 @@ const AddDepartment: React.FC<Props> = ({
         return {
           id: deparment.id,
           img: deparment.imgUrl,
-          owner: deparment.owner.name,
+          owner: deparment.owner?.name || "",
           description: deparment.description,
           title: deparment.title,
           name: deparment.name,
@@ -92,6 +96,19 @@ const AddDepartment: React.FC<Props> = ({
       }) || [];
     onDataUpdate(updatedRows);
   }, [isPost]);
+
+  const { data: headerData, mutate: aviHeaderMutate } =
+    useSWR<User[]>(`user/aviheaders`);
+
+  console.log("headerData:" + headerData);
+
+  const handleHeaderId = (
+    event: React.SyntheticEvent | null,
+    newValue: number | null
+  ) => {
+    console.log(newValue);
+    setHeaderId(newValue);
+  };
 
   return (
     <>
@@ -108,6 +125,7 @@ const AddDepartment: React.FC<Props> = ({
                     name: curName,
                     title: curTitle,
                     description: curDescription,
+                    userId: headerId,
                   })
                   .then((res) => {
                     console.log(res.data);
@@ -125,7 +143,7 @@ const AddDepartment: React.FC<Props> = ({
                   return {
                     id: deparment.id,
                     img: deparment.imgUrl,
-                    owner: deparment.owner.name,
+                    owner: deparment.owner?.name || "",
                     description: deparment.description,
                     title: deparment.title,
                     name: deparment.name,
@@ -165,11 +183,15 @@ const AddDepartment: React.FC<Props> = ({
               </FormControl>
               <FormControl>
                 <FormLabel>选择社长</FormLabel>
-                <Input
-                  required
-                  value={curDescription}
-                  onChange={(e) => setCurDescription(e.target.value)}
-                />
+                <Select onChange={handleHeaderId}>
+                  {headerData?.map((header) => {
+                    return (
+                      <Option key={header.id} value={header.id}>
+                        {header.name}
+                      </Option>
+                    );
+                  })}
+                </Select>
               </FormControl>
               <Box
                 sx={{

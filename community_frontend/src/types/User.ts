@@ -1,3 +1,4 @@
+import Department from "./Department";
 import LevelEnum from "./enums/LevelEnum";
 import RoleEnum from "./enums/RoleEnum";
 
@@ -10,4 +11,5 @@ export interface User {
   name: string;
   role: RoleEnum;
   level: LevelEnum;
+  ownDepartment: Department | null;
 }

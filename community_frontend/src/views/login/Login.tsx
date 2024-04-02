@@ -25,6 +25,8 @@ import { useAuthDispatch, useAuthState } from "../../context/auth";
 import Copyright from "../../components/copyright/Copyright";
 import { useNavigate } from "react-router";
 import { UserStoreContext } from "../../store/UserStore";
+import LevelEnum from "../../types/enums/LevelEnum";
+import RoleEnum from "../../types/enums/RoleEnum";
 
 export default function Login() {
   const userStore = useContext(UserStoreContext);
@@ -35,7 +37,9 @@ export default function Login() {
 
   useEffect(() => {
     if (authenticated) {
-      navigate("/app/dashboard");
+      userStore.isUserAndStudent
+        ? navigate("/stu/dashboard")
+        : navigate("/app/dashboard");
     }
   });
 
@@ -58,7 +62,9 @@ export default function Login() {
       userStore.login(res.data?.user);
       if (res.status === 200) {
         message.success("登陆成功");
-        navigate("/app/dashboard");
+        !userStore.isUserAndStudent
+          ? navigate("/app/dashboard")
+          : navigate("/stu/dashboard");
       } else message.error("登陆失败");
     } catch (error) {
       message.error("登陆失败");
