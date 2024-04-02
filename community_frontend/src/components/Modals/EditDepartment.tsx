@@ -15,6 +15,10 @@ import axios from "../../api";
 import useSWR from "swr";
 import { message } from "mui-message";
 import Department from "../../types/Department";
+import { Button as MButton } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
+import ImageUpload from "../ImageUploader/ImageUploader";
 
 interface Props {
   open: boolean;
@@ -24,6 +28,7 @@ interface Props {
   id: number;
   handleClose: () => void;
   onDataUpdate: (updatedRows: any) => void;
+  img: string;
   // parentMutate: Function;
 }
 
@@ -36,6 +41,18 @@ const fetcher = async (url: string, data: any) => {
   }
 };
 
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
 const EditDepartment: React.FC<Props> = ({
   open,
   handleClose,
@@ -43,6 +60,7 @@ const EditDepartment: React.FC<Props> = ({
   name,
   description,
   id,
+  img,
   onDataUpdate,
 }) => {
   const [curName, setCurName] = useState<string>(name);
@@ -82,7 +100,7 @@ const EditDepartment: React.FC<Props> = ({
     departments?.map((deparment) => {
       return {
         id: deparment.id,
-        img: deparment.img,
+        img: deparment.imgUrl,
         owner: deparment.owner.name,
         description: deparment.description,
         title: deparment.title,
@@ -95,7 +113,7 @@ const EditDepartment: React.FC<Props> = ({
       departments?.map((deparment) => {
         return {
           id: deparment.id,
-          img: deparment.img,
+          img: deparment.imgUrl,
           owner: deparment.owner.name,
           description: deparment.description,
           title: deparment.title,
@@ -125,7 +143,7 @@ const EditDepartment: React.FC<Props> = ({
                 departments?.map((deparment) => {
                   return {
                     id: deparment.id,
-                    img: deparment.img,
+                    img: deparment.imgUrl,
                     owner: deparment.owner.name,
                     description: deparment.description,
                     title: deparment.title,
@@ -139,6 +157,20 @@ const EditDepartment: React.FC<Props> = ({
             }}
           >
             <Stack spacing={2}>
+              <FormControl>
+                <FormLabel>社团logo</FormLabel>
+                {/* <MButton
+                  component="label"
+                  role={undefined}
+                  variant="contained"
+                  tabIndex={-1}
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload file
+                  <VisuallyHiddenInput type="file" />
+                </MButton> */}
+                <ImageUpload id={id} name={name} />
+              </FormControl>
               <FormControl>
                 <FormLabel>社团名称</FormLabel>
                 <Input

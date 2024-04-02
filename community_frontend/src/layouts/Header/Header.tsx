@@ -17,7 +17,7 @@ import {
   Toolbar,
 } from "@mui/material";
 import classNames from "classnames";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // styles
 import useStyles from "./styles";
@@ -28,12 +28,15 @@ import UserAvatar from "../UserAvatar/UserAvatar";
 import { Badge, Typography } from "../Wrappers/Wrappers";
 
 // context
-import { signOut, useAuthDispatch } from "../../context/auth";
+import { useNavigate } from "react-router";
+import { signOut, useAuthDispatch, useAuthState } from "../../context/auth";
 import {
   toggleSidebar,
   useLayoutDispatch,
   useLayoutState,
 } from "../../context/layout";
+import { User } from "../../types/User";
+import { UserStoreContext } from "../../store/UserStore";
 
 const messages = [
   {
@@ -96,6 +99,7 @@ export default function Header(props: any) {
   var layoutState = useLayoutState();
   var layoutDispatch = useLayoutDispatch();
   var userDispatch = useAuthDispatch();
+  const { user, authenticated, loading } = useAuthState();
 
   // local
   var [mailMenu, setMailMenu] = useState(null);
@@ -104,6 +108,14 @@ export default function Header(props: any) {
   var [isNotificationsUnread, setIsNotificationsUnread] = useState(true);
   var [profileMenu, setProfileMenu] = useState(null);
   var [isSearchOpen, setSearchOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const userStore = useContext(UserStoreContext);
+
+  useEffect(() => {
+    if (!authenticated) navigate("/login");
+  }, [authenticated, loading, user]);
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -137,7 +149,7 @@ export default function Header(props: any) {
           )}
         </IconButton>
         <Typography variant="h6" weight="medium" className={classes.logotype}>
-          React Material Admin
+          开源社团管理系统
         </Typography>
         <div className={classes.grow} />
         <div
@@ -304,7 +316,7 @@ export default function Header(props: any) {
         >
           <div className={classes.profileMenuUser}>
             <Typography variant="h4" weight="medium">
-              John Smith
+              {userStore.user?.username || user?.username}
             </Typography>
             <Typography
               className={classes.profileMenuLink}
@@ -312,7 +324,7 @@ export default function Header(props: any) {
               color="primary"
               href="https://flatlogic.com"
             >
-              Flalogic.com
+              {userStore.user?.email || user?.email}
             </Typography>
           </div>
           <MenuItem
@@ -343,7 +355,10 @@ export default function Header(props: any) {
             <Typography
               className={classes.profileMenuLink}
               color="primary"
-              onClick={() => signOut(userDispatch)}
+              onClick={() => {
+                signOut(userDispatch);
+                navigate("/login");
+              }}
             >
               Sign Out
             </Typography>

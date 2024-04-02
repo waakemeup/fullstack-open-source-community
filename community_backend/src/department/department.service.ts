@@ -1,17 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import Department from './department.entity';
-import { Repository } from 'typeorm';
-import CreateDepartmentDTO from './dto/create-department.dto';
 import { Request } from 'express';
-import RoleEnum from '../shared/enums/RoleEnum';
+import * as fs from 'fs';
+import { Repository } from 'typeorm';
 import LevelEnum from '../shared/enums/LevelEnum';
+import RoleEnum from '../shared/enums/RoleEnum';
+import User from '../user/user.entity';
+import Department from './department.entity';
+import CreateDepartmentDTO from './dto/create-department.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private departmentRepository: Repository<Department>,
+    private readonly userService: UserService,
   ) {}
 
   public async createDepartment(
@@ -19,7 +23,7 @@ export class DepartmentService {
     departmentData: CreateDepartmentDTO,
   ) {
     const { user } = req;
-    const { description, name, title } = departmentData;
+    const { description, name, title, userId } = departmentData;
 
     if (user.role !== RoleEnum.ADMIN) {
       throw new HttpException('You are not admin user', HttpStatus.FORBIDDEN);
@@ -36,11 +40,13 @@ export class DepartmentService {
         );
       }
 
+      const header = await this.userService.getById(userId);
+
       const newDepartment = this.departmentRepository.create({
         name,
         title,
         description,
-        owner: user,
+        owner: header || null,
       });
 
       await this.departmentRepository.save(newDepartment);
@@ -176,6 +182,53 @@ export class DepartmentService {
       throw new HttpException(
         error?.message || 'Something went wrong',
         HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  public async uploadDepartmentImage(
+    req: Request,
+    name: string,
+    file: Express.Multer.File,
+  ) {
+    // @ts-ignore
+    const department: Department = req.department;
+    const { user } = req;
+    const type = req.body.type;
+
+    try {
+      if (
+        type !== 'image/png' &&
+        type !== 'image/jpeg' &&
+        type !== 'image/gif' &&
+        type !== 'image/webp'
+      ) {
+        console.log('1:' + req.body.type);
+        fs.unlinkSync(req.file.path);
+        return req.res.status(400).json({ error: 'Invalid type' });
+      }
+      let oldImageUrn: string = '';
+      if (
+        type === 'image/png' ||
+        type === 'image/jpeg' ||
+        type === 'image/gif' ||
+        type === 'image/webp'
+      ) {
+        oldImageUrn = department.img ?? '';
+        department.img = req.file.filename;
+      }
+      await this.departmentRepository.save(department);
+
+      if (oldImageUrn !== '') {
+        fs.unlinkSync(`./public/images/${oldImageUrn}`);
+      }
+
+      return department;
+    } catch (err) {
+      console.log(err);
+      throw new HttpException(
+        'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

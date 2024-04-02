@@ -70,7 +70,7 @@ const AddDepartment: React.FC<Props> = ({
     departments?.map((deparment) => {
       return {
         id: deparment.id,
-        img: deparment.img,
+        img: deparment.imgUrl,
         owner: deparment.owner.name,
         description: deparment.description,
         title: deparment.title,
@@ -83,7 +83,7 @@ const AddDepartment: React.FC<Props> = ({
       departments?.map((deparment) => {
         return {
           id: deparment.id,
-          img: deparment.img,
+          img: deparment.imgUrl,
           owner: deparment.owner.name,
           description: deparment.description,
           title: deparment.title,
@@ -124,7 +124,7 @@ const AddDepartment: React.FC<Props> = ({
                 departments?.map((deparment) => {
                   return {
                     id: deparment.id,
-                    img: deparment.img,
+                    img: deparment.imgUrl,
                     owner: deparment.owner.name,
                     description: deparment.description,
                     title: deparment.title,
@@ -157,6 +157,14 @@ const AddDepartment: React.FC<Props> = ({
               </FormControl>
               <FormControl>
                 <FormLabel>社团描述</FormLabel>
+                <Input
+                  required
+                  value={curDescription}
+                  onChange={(e) => setCurDescription(e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>选择社长</FormLabel>
                 <Input
                   required
                   value={curDescription}

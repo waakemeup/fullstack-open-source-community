@@ -1,5 +1,6 @@
 import {
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -24,4 +25,8 @@ export default class CreateDepartmentDTO {
   @IsOptional()
   @MaxLength(100)
   description: string;
+
+  @IsNumber()
+  @IsOptional()
+  userId: number;
 }

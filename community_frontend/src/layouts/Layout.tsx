@@ -1,17 +1,16 @@
 import React from "react";
-import { Outlet } from "react-router";
 import Header from "./Header/Header";
 import Sidebar from "./Sidebar/Sidebar";
 
-import useStyles from "./styles";
-import { useLayoutState } from "../context/layout";
 import { Box, IconButton, Link } from "@mui/material";
 import classNames from "classnames";
+import { useLayoutState } from "../context/layout";
+import useStyles from "./styles";
 
 import {
   mdiFacebook as FacebookIcon,
-  mdiTwitter as TwitterIcon,
   mdiGithub as GithubIcon,
+  mdiTwitter as TwitterIcon,
 } from "@mdi/js";
 import Icon from "@mdi/react";
 

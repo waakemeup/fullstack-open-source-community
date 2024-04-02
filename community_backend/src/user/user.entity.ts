@@ -4,6 +4,7 @@ import {
   Entity,
   getConnection,
   Index,
+  JoinColumn,
   ManyToMany,
   OneToMany,
   OneToOne,

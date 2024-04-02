@@ -6,9 +6,12 @@ import {
   Param,
   Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import CreateUserDTO from './dto/create-user.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -17,6 +20,12 @@ export class UserController {
   @Get('all')
   public async selectAll() {
     return this.userService.selectAll();
+  }
+
+  @Get('aviheaders')
+  @UseGuards(JwtAuthGuard)
+  public async selectAllAviHeaderUser(@Req() req: Request) {
+    return await this.userService.selectAllAviHeaderUser(req);
   }
 
   @Get(':id')

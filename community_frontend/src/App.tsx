@@ -1,9 +1,16 @@
 import { Box } from "@mui/material";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import View from "./components/View";
 import { MessageBox } from "mui-message";
+import { useAuthState } from "./context/auth";
 
 function App() {
+  const { user, loading, authenticated } = useAuthState();
+
+  useEffect(() => {
+    console.log([user, loading, authenticated]);
+  }, [user, authenticated]);
+
   return (
     <>
       <MessageBox />

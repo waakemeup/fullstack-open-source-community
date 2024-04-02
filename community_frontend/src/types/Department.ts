@@ -20,4 +20,5 @@ export default interface Department {
   title: string;
   updatedAt: string;
   userId: number;
+  imgUrl: string;
 }

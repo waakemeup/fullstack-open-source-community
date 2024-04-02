@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import axios from "../../api";
 import { AxiosResponse } from "axios";
 import {
@@ -24,8 +24,11 @@ import { message } from "mui-message";
 import { useAuthDispatch, useAuthState } from "../../context/auth";
 import Copyright from "../../components/copyright/Copyright";
 import { useNavigate } from "react-router";
+import { UserStoreContext } from "../../store/UserStore";
 
 export default function Login() {
+  const userStore = useContext(UserStoreContext);
+
   const navigate = useNavigate();
   const dispatch = useAuthDispatch();
   const { authenticated } = useAuthState();
@@ -52,6 +55,7 @@ export default function Login() {
         password: data.get("password"),
       });
       dispatch("LOGIN", res.data);
+      userStore.login(res.data?.user);
       if (res.status === 200) {
         message.success("登陆成功");
         navigate("/app/dashboard");

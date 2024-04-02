@@ -50,4 +50,11 @@ export default class Department extends AbstractEntity {
   get userId(): string | number {
     return this.owner?.id || '';
   }
+
+  @Expose()
+  get imgUrl(): string {
+    return this.img
+      ? `http://localhost:${process.env.PORT}/public/images/${this.img}`
+      : '';
+  }
 }

@@ -6,6 +6,7 @@ import DepartmentInfo from "../views/infomanage/DepartmentInfo";
 import PostInfo from "../views/infomanage/PostInfo";
 import Login from "../views/login/Login";
 import SignUp from "../views/signup/SignUp";
+import { useAuthState } from "../context/auth";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));

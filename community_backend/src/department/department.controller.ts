@@ -7,12 +7,19 @@ import {
   Post,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { Request } from 'express';
 import CreateDepartmentDTO from './dto/create-department.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OwnDepartmentGuard } from './guards/own-department.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName } from '../shared/multer/editFileName';
+import { imageFileFilter } from '../shared/multer/imageFileFilter';
 
 @Controller('department')
 export class DepartmentController {
@@ -70,5 +77,25 @@ export class DepartmentController {
     for (let id of ids) {
       this.departmentService.deleteDepartmentById(req, id);
     }
+  }
+
+  @Post(':name/upload')
+  @UseGuards(JwtAuthGuard)
+  @UseGuards(OwnDepartmentGuard)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './public/images',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  public async uploadImage(
+    @Req() req: Request,
+    @Param('name') name: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.departmentService.uploadDepartmentImage(req, name, file);
   }
 }

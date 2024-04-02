@@ -27,6 +27,10 @@ import ShowDepartment from "../../components/Modals/ShowDepartment";
 import { Info } from "@mui/icons-material";
 import EditDepartment from "../../components/Modals/EditDepartment";
 import AddDepartment from "../../components/Modals/AddDepartment";
+import axios from "../../api";
+import { useAuthState } from "../../context/auth";
+import { redirect, useNavigate } from "react-router";
+import { Avatar } from "@mui/joy";
 
 interface EditToolbarProps {
   setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
@@ -69,7 +73,7 @@ const FullFeaturedCrudGrid = () => {
     departments?.map((deparment) => {
       return {
         id: deparment.id,
-        img: deparment.img,
+        img: deparment.imgUrl,
         owner: deparment.owner.name,
         description: deparment.description,
         title: deparment.title,
@@ -116,7 +120,7 @@ const FullFeaturedCrudGrid = () => {
       departments?.map((deparment) => {
         return {
           id: deparment.id,
-          img: deparment.img,
+          img: deparment.imgUrl,
           owner: deparment.owner.name,
           description: deparment.description,
           title: deparment.title,
@@ -156,6 +160,8 @@ const FullFeaturedCrudGrid = () => {
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
+    const res = axios.delete(`department/delete/${id}`);
+    console.log(res);
     setRows(rows.filter((row) => row.id !== id));
   };
 
@@ -196,11 +202,18 @@ const FullFeaturedCrudGrid = () => {
       // TODO:
       field: "img",
       headerName: "社团logo",
-      type: "string",
+      type: "custom",
       width: 80,
       align: "left",
       headerAlign: "left",
-      editable: true,
+      editable: false,
+      renderCell: ({ row }) => {
+        return (
+          <Avatar src={row.img} size="lg">
+            {row.name}
+          </Avatar>
+        );
+      },
     },
     {
       field: "name",
@@ -238,6 +251,15 @@ const FullFeaturedCrudGrid = () => {
           />,
         ];
       },
+    },
+    {
+      field: "owner",
+      headerName: "社长",
+      type: "string",
+      width: 180,
+      editable: false,
+      headerAlign: "center",
+      align: "center",
     },
     {
       field: "actions",
@@ -335,6 +357,7 @@ const FullFeaturedCrudGrid = () => {
         name={selectedDepartmentData?.name || ""}
         title={selectedDepartmentData?.title || ""}
         onDataUpdate={handleDataUpdate}
+        img={selectedDepartmentData?.imgUrl || ""}
       />
       <AddDepartment
         open={addDepartmentModal}
@@ -349,10 +372,14 @@ const FullFeaturedCrudGrid = () => {
 };
 
 function DepartmentInfo() {
+  const { user, authenticated } = useAuthState();
+  const navigate = useNavigate();
+  if (!authenticated) navigate("/login");
+
   return (
     <>
       <div>DepartmentInfo</div>
-      <FullFeaturedCrudGrid />
+      {authenticated && <FullFeaturedCrudGrid />}
     </>
   );
 }
