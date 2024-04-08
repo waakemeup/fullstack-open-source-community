@@ -40,9 +40,13 @@ export default class User extends AbstractEntity {
   })
   public ownDepartment: Department;
 
-  // 参加的社团
+  // 已经参加的社团
   @ManyToMany(() => Department, (department) => department.users)
   public departments: Department[];
+
+  // 申请的社团
+  @ManyToMany(() => Department, (department) => department.applyUsers)
+  public applyDepartments: Department[];
 
   // 角色
   @Column({

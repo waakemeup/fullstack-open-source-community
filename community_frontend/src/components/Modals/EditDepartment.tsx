@@ -20,6 +20,7 @@ import axios from "../../api";
 import Department from "../../types/Department";
 import { User } from "../../types/User";
 import ImageUpload from "../ImageUploader/ImageUploader";
+import MyEditor from "../editor/MyEditor";
 
 interface Props {
   open: boolean;
@@ -144,7 +145,7 @@ const EditDepartment: React.FC<Props> = ({
   return (
     <>
       <Modal open={open} onClose={handleClose}>
-        <ModalDialog>
+        <ModalDialog sx={{ overflow: "hidden", overflowY: "scroll" }}>
           <DialogTitle>编辑</DialogTitle>
           <DialogContent>编辑社团信息</DialogContent>
           <form
@@ -208,15 +209,20 @@ const EditDepartment: React.FC<Props> = ({
               </FormControl>
               <FormControl>
                 <FormLabel>社团描述</FormLabel>
-                <Input
+                {/* <Input
                   required
                   value={curDescription}
                   onChange={(e) => setCurDescription(e.target.value)}
+                /> */}
+                <MyEditor
+                  id={id}
+                  setCurHtml={(value: string) => setCurDescription(value)}
                 />
               </FormControl>
               <FormControl>
                 <FormLabel>选择社长</FormLabel>
                 <Select onChange={handleHeaderId}>
+                  <Option value={null}>取消社长</Option>
                   {headerData?.map((header) => {
                     return (
                       <Option key={header.id} value={header.id}>

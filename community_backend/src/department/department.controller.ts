@@ -59,6 +59,11 @@ export class DepartmentController {
     return await this.departmentService.selectAll(req);
   }
 
+  @Get('find/allbystu')
+  public async stuSelectAll() {
+    return await this.departmentService.stuSelectAll();
+  }
+
   @Get('find/userid=:id')
   @UseGuards(JwtAuthGuard)
   public async selectByUserId(@Req() req: Request, @Param('id') id: number) {
@@ -69,6 +74,11 @@ export class DepartmentController {
   @UseGuards(JwtAuthGuard)
   public async selectById(@Req() req: Request, @Param('id') id: number) {
     return await this.departmentService.selectById(req, id);
+  }
+
+  @Get('stu/find/:id')
+  public async stuSelectById(@Param('id') id: number) {
+    return await this.departmentService.stuSelectById(id);
   }
 
   @Delete('delete/batch')
@@ -97,5 +107,41 @@ export class DepartmentController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.departmentService.uploadDepartmentImage(req, name, file);
+  }
+
+  @Post('stu/apply')
+  @UseGuards(JwtAuthGuard)
+  public async applyDepartment(
+    @Req() req: Request,
+    @Body() data: { id: number },
+  ) {
+    return await this.departmentService.applyOrCancelDepartment(req, data.id);
+  }
+
+  @Get('header/applyusers')
+  @UseGuards(JwtAuthGuard)
+  public async getApplyMyDepartmentUsers(@Req() req: Request) {
+    return await this.departmentService.getApplyMyDepartmentUsers(req);
+  }
+
+  @Post('header/accept')
+  @UseGuards(JwtAuthGuard)
+  public async accecptApply(@Req() req: Request, @Body() id: number) {
+    return await this.departmentService.accecptApply(req, id);
+  }
+
+  @Get('header/users')
+  @UseGuards(JwtAuthGuard)
+  public async getAllDepartmentUsers(@Req() req: Request) {
+    return await this.departmentService.getAllDepartmentUsers(req);
+  }
+
+  @Post('header/removeuser')
+  @UseGuards(JwtAuthGuard)
+  public async removeUserFromDepartment(
+    @Req() req: Request,
+    @Body() id: number,
+  ) {
+    return await this.departmentService.removeFromDepartment(req, id);
   }
 }

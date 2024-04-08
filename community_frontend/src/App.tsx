@@ -8,7 +8,7 @@ function App() {
   const { user, loading, authenticated } = useAuthState();
 
   useEffect(() => {
-    console.log([user, loading, authenticated]);
+    // console.log([user, loading, authenticated]);
   }, [user, authenticated]);
 
   return (

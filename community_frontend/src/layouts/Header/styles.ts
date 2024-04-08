@@ -14,6 +14,9 @@ export default makeStyles((theme: Theme) =>
         display: "none",
       },
     },
+    linkActive: {
+      backgroundColor: theme.palette.info.main + "!important",
+    },
     appBar: {
       width: "100vw",
       zIndex: theme.zIndex.drawer + 1,

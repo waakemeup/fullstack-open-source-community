@@ -33,7 +33,8 @@ export default function Login() {
 
   const navigate = useNavigate();
   const dispatch = useAuthDispatch();
-  const { authenticated } = useAuthState();
+  // const { authenticated } = useAuthState();
+  const { authenticated } = userStore;
 
   useEffect(() => {
     if (authenticated) {

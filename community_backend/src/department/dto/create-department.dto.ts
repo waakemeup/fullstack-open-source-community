@@ -23,7 +23,7 @@ export default class CreateDepartmentDTO {
 
   @IsString()
   @IsOptional()
-  @MaxLength(100)
+  @MaxLength(5000)
   description: string;
 
   @IsNumber()

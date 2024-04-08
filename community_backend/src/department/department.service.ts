@@ -15,6 +15,8 @@ export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private departmentRepository: Repository<Department>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private readonly userService: UserService,
   ) {}
 
@@ -153,10 +155,14 @@ export class DepartmentService {
     }
   }
 
+  public async stuSelectAll() {
+    return await this.departmentRepository.find({});
+  }
+
   public async selectByUserId(req: Request, id: number) {
     try {
       const { user } = req;
-      if (!(user.role === RoleEnum.ADMIN))
+      if (!(user.role === RoleEnum.ADMIN) && !(user.level === LevelEnum.HEADER))
         throw new HttpException('You are not admin user', HttpStatus.FORBIDDEN);
       const res = await this.departmentRepository.findOne({
         // relations: ['owner'],
@@ -181,6 +187,18 @@ export class DepartmentService {
       const { user } = req;
       if (!(user.role === RoleEnum.ADMIN))
         throw new HttpException('You are not admin user', HttpStatus.FORBIDDEN);
+      const department = await this.departmentRepository.findOneOrFail(id);
+      return department;
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Something went wrong',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  public async stuSelectById(id: number) {
+    try {
       const department = await this.departmentRepository.findOneOrFail(id);
       return department;
     } catch (error) {
@@ -235,6 +253,125 @@ export class DepartmentService {
         'Something went wrong',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  public async applyOrCancelDepartment(req: Request, id: number) {
+    try {
+      const { user } = req;
+      console.log(user);
+      const user2 = await this.userRepository.findOne({ id: user.id });
+      const department = await this.departmentRepository.findOne({
+        where: {
+          id,
+        },
+      });
+      // console.log('department:' + department.id);
+      // await this.departmentRepository.update(id, {
+      //   applyUsers: [...department.applyUsers, user2],
+      // });
+      if (department.applyUsers.find((user) => user.id === user2.id)) {
+        const removeIndex = department.applyUsers.findIndex(
+          (user) => user.id === user2.id,
+        );
+        if (removeIndex !== -1) {
+          department.applyUsers.splice(removeIndex, 1);
+        }
+      } else {
+        department.applyUsers = [...department.applyUsers, user2];
+      }
+
+      await this.departmentRepository.save(department);
+
+      return await this.departmentRepository.findOneOrFail({ id });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async getApplyMyDepartmentUsers(req: Request) {
+    try {
+      const { user } = req;
+      if (!(user.level === LevelEnum.HEADER))
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const myDepartment = await this.departmentRepository.findOne({
+        where: {
+          owner: {
+            id: user.id,
+          },
+        },
+      });
+      console.log(myDepartment);
+      return myDepartment.applyUsers;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async accecptApply(req: Request, id: number) {
+    try {
+      const { user } = req;
+      if (!(user.level === LevelEnum.HEADER))
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const applyUser = await this.userRepository.findOne(id);
+      const myDepartment = await this.departmentRepository.findOne({
+        where: {
+          owner: {
+            id: user.id,
+          },
+        },
+      });
+      const removeIndex = myDepartment.applyUsers.findIndex(
+        (user) => user.id === id,
+      );
+      myDepartment.applyUsers.splice(removeIndex, 1);
+      myDepartment.users = [...myDepartment.users, applyUser];
+      await this.departmentRepository.save(myDepartment);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async getAllDepartmentUsers(req: Request) {
+    try {
+      const { user } = req;
+      if (!(user.level === LevelEnum.HEADER))
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const myDepartment = await this.departmentRepository.findOne({
+        owner: {
+          id: user.id,
+        },
+      });
+
+      return myDepartment.users;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async removeFromDepartment(req: Request, id: number) {
+    try {
+      const { user } = req;
+      if (!(user.level === LevelEnum.HEADER))
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+
+      const myDepartment = await this.departmentRepository.findOne({
+        owner: {
+          id: user.id,
+        },
+      });
+
+      const removeIndex = myDepartment.users.findIndex(
+        (user) => user.id === id,
+      );
+
+      myDepartment.users.splice(removeIndex, 1);
+
+      await this.departmentRepository.save(myDepartment);
+      return myDepartment;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

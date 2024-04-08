@@ -36,6 +36,7 @@ const structure = [
     label: "信息管理",
     link: "/app/infomanage",
     icon: <TypographyIcon />,
+    adminOnly: true,
     children: [
       {
         label: "公告信息",
@@ -47,22 +48,53 @@ const structure = [
       },
     ],
   },
-  { id: 2, label: "Tables", link: "/app/tables", icon: <TableIcon /> },
+  {
+    id: 2,
+    label: "社团管理",
+    link: "/app/header/departmentmanage",
+    icon: <TableIcon />,
+    headerOnly: true,
+    children: [
+      {
+        label: "成员管理",
+        link: "/app/header/departmentmanage/person",
+      },
+      {
+        label: "活动管理",
+        link: "/app/header/departmentmanage/activity",
+      },
+      // {
+      //   label: "我的社团",
+      //   link: "/app/header/departmentmanage/mydepartment",
+      // },
+    ],
+  },
   {
     id: 3,
-    label: "Notifications",
-    link: "/app/notifications",
+    label: "资源管理",
+    link: "/app/filemanage",
     icon: <NotificationsIcon />,
+    headerOnly: true,
+    children: [
+      {
+        label: "资源审批",
+        link: "/app/filemanage/judge",
+      },
+      {
+        label: "资源管理",
+        link: "/app/filemanage/manage",
+      },
+    ],
   },
   {
     id: 4,
-    label: "UI Elements",
-    link: "/app/ui",
+    label: "用户权限",
+    link: "/app/level",
+    adminOnly: true,
     icon: <UIElementsIcon />,
     children: [
-      { label: "Icons", link: "/app/ui/icons" },
-      { label: "Charts", link: "/app/ui/charts" },
-      { label: "Maps", link: "/app/ui/maps" },
+      { label: "权限管理", link: "/app/level/level" },
+      { label: "用户管理", link: "/app/level/user" },
     ],
   },
   { id: 5, type: "divider" },

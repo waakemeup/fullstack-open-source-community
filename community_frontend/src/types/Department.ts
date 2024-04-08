@@ -1,5 +1,6 @@
 import LevelEnum from "./enums/LevelEnum";
 import RoleEnum from "./enums/RoleEnum";
+import { User } from "./User";
 
 export default interface Department {
   id: number;
@@ -21,4 +22,6 @@ export default interface Department {
   updatedAt: string;
   userId: number;
   imgUrl: string;
+  applyUsers: User[];
+  users: User[];
 }

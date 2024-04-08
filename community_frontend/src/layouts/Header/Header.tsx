@@ -9,9 +9,12 @@ import {
 } from "@mui/icons-material";
 import {
   AppBar,
+  Box,
+  Button,
   Fab,
   IconButton,
   InputBase,
+  Link,
   Menu,
   MenuItem,
   Toolbar,
@@ -28,7 +31,7 @@ import UserAvatar from "../UserAvatar/UserAvatar";
 import { Badge, Typography } from "../Wrappers/Wrappers";
 
 // context
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { signOut, useAuthDispatch, useAuthState } from "../../context/auth";
 import {
   toggleSidebar,
@@ -90,7 +93,7 @@ const notifications = [
     message: "12 new orders has arrived today",
   },
 ];
-
+// TODO:写学生前台
 export default function Header(props: any) {
   var classes = useStyles();
   // console.log(classNames(classes.searchFocused));
@@ -110,15 +113,24 @@ export default function Header(props: any) {
   var [isSearchOpen, setSearchOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const userStore = useContext(UserStoreContext);
 
   useEffect(() => {
-    if (!authenticated) navigate("/login");
+    if (!userStore.authenticated) navigate("/login");
   }, [authenticated, loading, user]);
 
+  const link1Active = location.pathname === "/stu/dashboard";
+  const link2Active = location.pathname === "/stu/postdepartments";
+  const link3Active = location.pathname === "/stu/myinfo";
+
   return (
-    <AppBar position="fixed" className={classes.appBar}>
+    <AppBar
+      position="fixed"
+      className={classes.appBar}
+      sx={{ backgroundColor: "#536DFE" }}
+    >
       <Toolbar className={classes.toolbar}>
         <IconButton
           color="inherit"
@@ -151,6 +163,50 @@ export default function Header(props: any) {
         <Typography variant="h6" weight="medium" className={classes.logotype}>
           开源社团管理系统
         </Typography>
+        {userStore.isUserAndStudent && (
+          <Box
+            flex="row"
+            alignItems={"center"}
+            whiteSpace={"nowrap"}
+            overflow="scroll"
+          >
+            <Link
+              sx={{
+                color: "white",
+              }}
+              underline="hover"
+              component={Button}
+              onClick={() => navigate("/stu/dashboard")}
+              className={link1Active ? classes.linkActive : ""}
+            >
+              首页
+            </Link>
+            <Link
+              sx={{
+                color: "white",
+              }}
+              underline={"hover"}
+              component={Button}
+              className={link2Active ? classes.linkActive : ""}
+              onClick={() => {
+                navigate("/stu/postdepartments");
+              }}
+            >
+              申请的社团
+            </Link>
+            <Link
+              sx={{
+                color: "white",
+              }}
+              underline="hover"
+              component={Button}
+              onClick={() => navigate("/stu/myinfo")}
+              className={link3Active ? classes.linkActive : ""}
+            >
+              个人中心
+            </Link>
+          </Box>
+        )}
         <div className={classes.grow} />
         <div
           className={classNames(classes.search, {

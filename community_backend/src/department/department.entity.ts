@@ -3,12 +3,13 @@ import {
   Entity,
   Index,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   OneToOne,
 } from 'typeorm';
 import AbstractEntity from '../shared/utils/Entity';
 import User from '../user/user.entity';
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 
 @Entity()
 export default class Department extends AbstractEntity {
@@ -41,8 +42,20 @@ export default class Department extends AbstractEntity {
   // TODO:管理员
 
   // 社员
-  @ManyToMany(() => User, (user) => user.departments)
+  @ManyToMany(() => User, (user) => user.departments, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinTable({ name: 'department_user' })
   public users: User[];
+
+  // 申请的成员
+  @ManyToMany(() => User, (user) => user.applyDepartments, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinTable({ name: 'department_applyuser' })
+  public applyUsers: User[];
 
   @Expose({
     name: 'userId',

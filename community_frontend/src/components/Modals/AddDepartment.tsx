@@ -18,6 +18,7 @@ import useSWR from "swr";
 import { message } from "mui-message";
 import Department from "../../types/Department";
 import { User } from "../../types/User";
+import MyEditor from "../editor/MyEditor";
 
 interface Props {
   open: boolean;
@@ -113,7 +114,7 @@ const AddDepartment: React.FC<Props> = ({
   return (
     <>
       <Modal open={open} onClose={handleClose}>
-        <ModalDialog>
+        <ModalDialog sx={{ overflow: "hidden", overflowY: "scroll" }}>
           <DialogTitle>创建</DialogTitle>
           <DialogContent>创建社团</DialogContent>
           <form
@@ -175,10 +176,13 @@ const AddDepartment: React.FC<Props> = ({
               </FormControl>
               <FormControl>
                 <FormLabel>社团描述</FormLabel>
-                <Input
+                {/* <Input
                   required
                   value={curDescription}
                   onChange={(e) => setCurDescription(e.target.value)}
+                /> */}
+                <MyEditor
+                  setCurHtml={(value: string) => setCurDescription(value)}
                 />
               </FormControl>
               <FormControl>
