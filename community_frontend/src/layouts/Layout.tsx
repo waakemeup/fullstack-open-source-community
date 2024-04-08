@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Header from "./Header/Header";
 import Sidebar from "./Sidebar/Sidebar";
 
@@ -14,6 +14,7 @@ import {
 } from "@mdi/js";
 import Icon from "@mdi/react";
 import { UserStoreContext } from "../store/UserStore";
+import { useLocation } from "react-router";
 
 interface Props {
   children: JSX.Element;
@@ -23,6 +24,12 @@ const Layout: React.FC<Props> = ({ children }) => {
   const userStore = useContext(UserStoreContext);
   let classes = useStyles();
   let layoutState = useLayoutState();
+  const location = useLocation();
+
+  // console.log(
+  //   location.pathname,
+  //   location.pathname.startsWith("stu/department/main")
+  // );
 
   return (
     <div className={classes.root}>

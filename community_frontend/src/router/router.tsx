@@ -18,6 +18,7 @@ import Judge from "../views/headerViews/fileManage/Judge";
 import FileManage from "../views/headerViews/fileManage/FileManage";
 import LevelManage from "../views/Admin/LevelManage/LevelManage";
 import UserManage from "../views/Admin/LevelManage/UserManage";
+import RealDepartment from "../views/stuViews/department/RealDepartment";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));
@@ -144,6 +145,14 @@ const router = createBrowserRouter([
       </Layout>
     ),
     path: "/app/level/user",
+  },
+  {
+    element: (
+      <Layout>
+        <RealDepartment />
+      </Layout>
+    ),
+    path: "/stu/department/main/:id",
   },
 ]);
 

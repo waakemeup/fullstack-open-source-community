@@ -10,6 +10,8 @@ import {
   LibraryBooks as LibraryIcon,
   HelpOutline as FAQIcon,
   ArrowBack as ArrowBackIcon,
+  ForumOutlined,
+  ShareOutlined,
 } from "@mui/icons-material";
 import { useTheme } from "@mui/styles";
 import classNames from "classnames";
@@ -30,7 +32,40 @@ import {
 import { useLocation, useNavigate } from "react-router";
 
 const structure = [
-  { id: 0, label: "系统首页", link: "/app/dashboard", icon: <HomeIcon /> },
+  {
+    id: 0,
+    label: "系统首页",
+    // headerOnly: true,
+    // adminOnly: true,
+    link: "/app/dashboard",
+    icon: <HomeIcon />,
+  },
+  // {
+  //   id: 15,
+  //   label: "社团首页",
+  //   link: "/stu/department/main/main",
+  //   icon: <HomeIcon />,
+  // },
+  // {
+  //   id: 16,
+  //   label: "话题",
+  //   link: "/stu/department/main/main/discuss",
+  //   icon: <ForumOutlined />,
+  //   children: [
+  //     {
+  //       label: "话题讨论",
+  //       link: "/stu/department/main/main/discuss",
+  //     },
+  //     {
+  //       label: "组队参赛",
+  //       link: "/stu/department/main/main/game",
+  //     },
+  //     {
+  //       label: "公开求助",
+  //       link: "/stu/department/main/main/help",
+  //     },
+  //   ],
+  // },
   {
     id: 1,
     label: "信息管理",

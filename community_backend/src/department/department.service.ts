@@ -333,6 +333,30 @@ export class DepartmentService {
     }
   }
 
+  public async rejectApply(req: Request, id: number) {
+    try {
+      const { user } = req;
+      if (!(user.level === LevelEnum.HEADER))
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const applyUser = await this.userRepository.findOne(id);
+      const myDepartment = await this.departmentRepository.findOne({
+        where: {
+          owner: {
+            id: user.id,
+          },
+        },
+      });
+      const removeIndex = myDepartment.applyUsers.findIndex(
+        (user) => user.id === id,
+      );
+      myDepartment.applyUsers.splice(removeIndex, 1);
+      // myDepartment.users = [...myDepartment.users, applyUser];
+      await this.departmentRepository.save(myDepartment);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   public async getAllDepartmentUsers(req: Request) {
     try {
       const { user } = req;

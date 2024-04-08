@@ -130,6 +130,12 @@ export class DepartmentController {
     return await this.departmentService.accecptApply(req, id);
   }
 
+  @Post('header/reject')
+  @UseGuards(JwtAuthGuard)
+  public async rejectApply(@Req() req: Request, @Body() id: number) {
+    return await this.departmentService.rejectApply(req, id);
+  }
+
   @Get('header/users')
   @UseGuards(JwtAuthGuard)
   public async getAllDepartmentUsers(@Req() req: Request) {

@@ -84,7 +84,17 @@ const PersonManage: React.FC<Props> = () => {
                     >
                       同意
                     </Button>
-                    <Button>拒绝</Button>
+                    <Button
+                      onClick={async () => {
+                        await axios.post("department/header/reject", {
+                          id: user.id,
+                        });
+                        await apply_mutate();
+                        await getusers_mutate();
+                      }}
+                    >
+                      拒绝
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

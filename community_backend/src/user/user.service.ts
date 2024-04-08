@@ -130,4 +130,36 @@ export class UserService {
       );
     }
   }
+
+  public async getApplyingDepartments(req: Request) {
+    try {
+      const { user } = req;
+      const nowUser = await this.userRepository.findOne({
+        relations: ['departments', 'applyDepartments'],
+        where: {
+          id: user.id,
+        },
+      });
+
+      return nowUser.applyDepartments;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async getJoinedDepartments(req: Request) {
+    try {
+      const { user } = req;
+      const nowUser = await this.userRepository.findOne({
+        relations: ['departments', 'applyDepartments'],
+        where: {
+          id: user.id,
+        },
+      });
+
+      return nowUser.departments;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

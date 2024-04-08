@@ -28,6 +28,18 @@ export class UserController {
     return await this.userService.selectAllAviHeaderUser(req);
   }
 
+  @Get('applyingdepartments')
+  @UseGuards(JwtAuthGuard)
+  public async getApplyingDepartments(@Req() req: Request) {
+    return await this.userService.getApplyingDepartments(req);
+  }
+
+  @Get('joineddepartments')
+  @UseGuards(JwtAuthGuard)
+  public async getJoinedDepartments(@Req() req: Request) {
+    return await this.userService.getJoinedDepartments(req);
+  }
+
   @Get(':id')
   public async getById(@Param('id') id: number) {
     return this.userService.getById(id);
