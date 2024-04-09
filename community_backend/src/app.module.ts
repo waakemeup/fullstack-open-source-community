@@ -8,6 +8,9 @@ import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { DepartmentModule } from './department/department.module';
+import { PostModule } from './post/post.module';
+import { CommentModule } from './comment/comment.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -32,6 +35,9 @@ import { DepartmentModule } from './department/department.module';
     DatabaseModule,
     AuthModule,
     DepartmentModule,
+    PostModule,
+    CommentModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

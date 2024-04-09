@@ -14,6 +14,7 @@ import { Exclude, Expose } from 'class-transformer';
 import RoleEnum from '../shared/enums/RoleEnum';
 import LevelEnum from '../shared/enums/LevelEnum';
 import Department from '../department/department.entity';
+import Post from '../post/post.entity';
 
 @Entity()
 export default class User extends AbstractEntity {
@@ -47,6 +48,10 @@ export default class User extends AbstractEntity {
   // 申请的社团
   @ManyToMany(() => Department, (department) => department.applyUsers)
   public applyDepartments: Department[];
+
+  // 我的帖子
+  @OneToMany(() => Post, (post) => post.user)
+  public posts: Post[];
 
   // 角色
   @Column({

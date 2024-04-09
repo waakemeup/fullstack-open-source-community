@@ -36,7 +36,10 @@ export class UserService {
   }
 
   async getById(id: number) {
-    const user = await this.userRepository.findOne({ id });
+    const user = await this.userRepository.findOne({
+      relations: ['ownDepartment'],
+      where: { id },
+    });
     if (!user) {
       return null;
       throw new HttpException(

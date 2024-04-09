@@ -5,11 +5,13 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import AbstractEntity from '../shared/utils/Entity';
 import User from '../user/user.entity';
 import { Exclude, Expose } from 'class-transformer';
+import Post from '../post/post.entity';
 
 @Entity()
 export default class Department extends AbstractEntity {
@@ -30,6 +32,10 @@ export default class Department extends AbstractEntity {
 
   @Column()
   public title: string;
+
+  // 社团中帖子
+  @OneToMany(() => Post, (post) => post.department)
+  public posts: Post[];
 
   // 社长
   @OneToOne(() => User, (user) => user.ownDepartment, {

@@ -398,4 +398,31 @@ export class DepartmentService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  public async findOneOrFail(name: string): Promise<Department | null> {
+    return await this.departmentRepository.findOneOrFail({ name: name });
+  }
+
+  // public async findDiscussPosts(department_id: number) {
+  //   try {
+  //     // const department = await this.departmentRepository.findOne({
+  //     //   relations: ['posts'],
+  //     //   where: {
+  //     //     id: department_id,
+  //     //   },
+  //     // });
+
+  //     const department = await this.departmentRepository
+  //       .createQueryBuilder('department')
+  //       .leftJoinAndSelect('department.posts', 'posts')
+  //       .leftJoinAndSelect('posts.user', 'user')
+  //       .where('department.id = :id', { id: department_id })
+  //       .getOne();
+
+  //     // console.log(department);
+  //     return department.posts;
+  //   } catch (error) {
+  //     throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+  //   }
+  // }
 }
