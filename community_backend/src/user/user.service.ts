@@ -76,10 +76,32 @@ export class UserService {
     }
   }
 
-  async selectAll() {
+  async selectAll(req: Request) {
     try {
+      const { user } = req;
+      if (user.role !== RoleEnum.ADMIN)
+        throw new HttpException('You are not admin', HttpStatus.FORBIDDEN);
       const users = await this.userRepository.find({
         relations: ['ownDepartment'],
+      });
+      console.log(users);
+      return users;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async selectAllExceptAdmin(req: Request) {
+    try {
+      const { user } = req;
+      if (user.role !== RoleEnum.ADMIN)
+        throw new HttpException('You are not admin', HttpStatus.FORBIDDEN);
+      const users = await this.userRepository.find({
+        relations: ['ownDepartment'],
+        where: {
+          role: RoleEnum.USER,
+        },
       });
       console.log(users);
       return users;
@@ -161,6 +183,27 @@ export class UserService {
       });
 
       return nowUser.departments;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async updateUserByAdmin(
+    req: Request,
+    id: number,
+    data: Partial<CreateUserDTO>,
+  ) {
+    try {
+      const { user } = req;
+      if (user.role !== RoleEnum.ADMIN)
+        throw new HttpException('You are not admin', HttpStatus.FORBIDDEN);
+      const { role, level } = data;
+      await this.userRepository.update(id, {
+        role,
+        level,
+      });
+      // console.log(await this.userRepository.findOneOrFail(id));
+      return await this.userRepository.findOneOrFail(id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

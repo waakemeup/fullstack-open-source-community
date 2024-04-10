@@ -44,6 +44,20 @@ export class PostService {
     }
   }
 
+  public async getPostById(id: number) {
+    try {
+      const post = await this.postRepository.findOneOrFail({
+        relations: ['user', 'department'],
+        where: {
+          id,
+        },
+      });
+      return post;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   public async getAllDiscussPostsInDepartmentTakePage(
     req: Request,
     department_id: number,

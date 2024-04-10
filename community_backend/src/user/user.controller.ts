@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,8 +19,15 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('all')
-  public async selectAll() {
-    return this.userService.selectAll();
+  @UseGuards(JwtAuthGuard)
+  public async selectAll(@Req() req: Request) {
+    return this.userService.selectAll(req);
+  }
+
+  @Get('allexceptadmin')
+  @UseGuards(JwtAuthGuard)
+  public async selectAllExceptAdmin(@Req() req: Request) {
+    return this.userService.selectAllExceptAdmin(req);
   }
 
   @Get('aviheaders')
@@ -41,6 +49,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   public async getById(@Param('id') id: number) {
     return this.userService.getById(id);
   }
@@ -54,5 +63,15 @@ export class UserController {
   @Delete(':id')
   public async deleteUserById(@Param('id') id: number) {
     return await this.userService.deleteUserById(id);
+  }
+
+  @Put('updatebyadmin/:id')
+  @UseGuards(JwtAuthGuard)
+  public async updateUserByAdmin(
+    @Req() req: Request,
+    @Param('id') id: number,
+    @Body() data: Partial<CreateUserDTO>,
+  ) {
+    return await this.userService.updateUserByAdmin(req, id, data);
   }
 }

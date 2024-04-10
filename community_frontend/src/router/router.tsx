@@ -16,7 +16,6 @@ import PersonManage from "../views/headerViews/manage/PersonManage";
 import ActivityManage from "../views/headerViews/manage/ActivityManage";
 import Judge from "../views/headerViews/fileManage/Judge";
 import FileManage from "../views/headerViews/fileManage/FileManage";
-import LevelManage from "../views/Admin/LevelManage/LevelManage";
 import UserManage from "../views/Admin/LevelManage/UserManage";
 import RealDepartment from "../views/stuViews/department/RealDepartment";
 // import Main from "../views/main/Main";
@@ -133,18 +132,10 @@ const router = createBrowserRouter([
   {
     element: (
       <Layout>
-        <LevelManage />
-      </Layout>
-    ),
-    path: "/app/level/level",
-  },
-  {
-    element: (
-      <Layout>
         <UserManage />
       </Layout>
     ),
-    path: "/app/level/user",
+    path: "/app/level",
   },
   {
     element: (

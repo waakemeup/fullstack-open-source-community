@@ -127,10 +127,10 @@ const structure = [
     link: "/app/level",
     adminOnly: true,
     icon: <UIElementsIcon />,
-    children: [
-      { label: "权限管理", link: "/app/level/level" },
-      { label: "用户管理", link: "/app/level/user" },
-    ],
+    // children: [
+    //   { label: "权限管理", link: "/app/level/level" },
+    //   { label: "用户管理", link: "/app/level/user" },
+    // ],
   },
   { id: 5, type: "divider" },
   { id: 6, type: "title", label: "HELP" },

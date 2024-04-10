@@ -25,6 +25,12 @@ export class PostController {
     return await this.postService.createPost(req, postData);
   }
 
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  public async findById(@Param('id') id: number) {
+    return await this.postService.getPostById(id);
+  }
+
   // 这里的id是department_id
   @Get('all/discuss/:id?pagenumber=:pagenumber')
   @UseGuards(JwtAuthGuard)

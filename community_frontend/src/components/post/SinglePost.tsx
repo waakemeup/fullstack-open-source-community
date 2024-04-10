@@ -21,11 +21,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CommentIcon from "@mui/icons-material/Comment";
 import moment from "moment";
 import Prism from "prismjs";
-import "prismjs/themes/prism.css";
+// import "prismjs/themes/prism.css";
+import "prism-themes/themes/prism-laserwave.css";
+// import "prismjs/themes/prism-tomorrow.css";
+import "prismjs/plugins/autoloader/prism-autoloader";
 import { UserStoreContext } from "../../store/UserStore";
 import RoleEnum from "../../types/enums/RoleEnum";
 import LevelEnum from "../../types/enums/LevelEnum";
 import PostTypeEnum from "../../types/enums/PostTypeEnum";
+import SinglePostModal from "../Modals/SinglePostModal";
 
 interface Props {
   post: Post;
@@ -48,7 +52,10 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 const SinglePost: React.FC<Props> = ({ post, id }) => {
+  Prism.plugins.autoloader.languages_path =
+    "../../../node_modules/prismjs/components/";
   const [expanded, setExpanded] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const userStore = useContext(UserStoreContext);
 
@@ -61,6 +68,11 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
 
   return (
     <Card sx={{ maxWidth: "100%", maxHeight: "300px" }}>
+      <SinglePostModal
+        open={modalOpen}
+        handleClose={() => setModalOpen(false)}
+        id={post.id}
+      />
       <CardHeader
         sx={{ paddingBottom: "1px" }}
         avatar={
@@ -107,6 +119,7 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
             marginBottom: "5px",
             paddingBottom: "5px",
           }}
+          onClick={() => setModalOpen(!modalOpen)}
         >
           <div
             style={{
@@ -130,7 +143,10 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton aria-label="comment">
+        <IconButton
+          aria-label="comment"
+          onClick={() => setModalOpen(!modalOpen)}
+        >
           <CommentIcon />
         </IconButton>
         <IconButton aria-label="share">
@@ -138,7 +154,7 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
         </IconButton>
         <ExpandMore
           expand={expanded}
-          onClick={handleExpandClick}
+          onClick={() => setModalOpen(!modalOpen)}
           aria-expanded={expanded}
           aria-label="show more"
           color="info"
