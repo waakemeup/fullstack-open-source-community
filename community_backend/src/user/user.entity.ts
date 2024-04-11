@@ -15,6 +15,7 @@ import RoleEnum from '../shared/enums/RoleEnum';
 import LevelEnum from '../shared/enums/LevelEnum';
 import Department from '../department/department.entity';
 import Post from '../post/post.entity';
+import { MyFile } from '../file/file.entity';
 
 @Entity()
 export default class User extends AbstractEntity {
@@ -64,4 +65,7 @@ export default class User extends AbstractEntity {
     default: LevelEnum.STUDENT,
   })
   public level: LevelEnum;
+
+  @OneToMany(() => MyFile, (myFile) => myFile.user)
+  public files: MyFile[];
 }

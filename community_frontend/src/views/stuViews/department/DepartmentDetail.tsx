@@ -14,7 +14,9 @@ import { Typography } from "../../../layouts/Wrappers/Wrappers";
 import moment from "moment";
 import Prism from "prismjs";
 // import "prismjs/themes/prism.css";
-import "prism-themes/themes/prism-laserwave.css";
+// import "prism-themes/themes/prism-laserwave.css";
+import "../../../prism-laserwave.css";
+
 import axios from "../../../api";
 import { UserStoreContext } from "../../../store/UserStore";
 

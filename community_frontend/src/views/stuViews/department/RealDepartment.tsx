@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Divider,
+  Link,
   Pagination,
   Paper,
   Stack,
@@ -11,9 +13,10 @@ import React, { useState } from "react";
 import { useParams } from "react-router";
 import useSWR from "swr";
 import PostingModal from "../../../components/Modals/PostingModal";
+import SinglePost from "../../../components/post/SinglePost";
 import Department from "../../../types/Department";
 import Post from "../../../types/Post";
-import SinglePost from "../../../components/post/SinglePost";
+import FileUpload from "../../../components/FileUploader/FileUploader";
 
 interface Props {}
 
@@ -68,6 +71,7 @@ const RealDepartment: React.FC<Props> = () => {
   });
 
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [helpPageNumber, setHelpPageNumber] = useState<number>(1);
 
   const {
     // @ts-ignore
@@ -87,7 +91,7 @@ const RealDepartment: React.FC<Props> = () => {
     // @ts-ignore
     data: { helpPosts, length: helpPostsLength },
     mutate: help_posts_mutate,
-  } = useSWR<MyInterface>(`post/all/help/${id}pagenumber=${pageNumber}`, {
+  } = useSWR<MyInterface>(`post/all/help/${id}pagenumber=${helpPageNumber}`, {
     revalidateIfStale: true,
     revalidateOnFocus: true,
     revalidateOnMount: true,
@@ -100,8 +104,13 @@ const RealDepartment: React.FC<Props> = () => {
   const [value, setValue] = useState(0);
   const [showPostingModal, setShowPostingModal] = useState<boolean>(false);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = async (
+    event: React.SyntheticEvent,
+    newValue: number
+  ) => {
     setValue(newValue);
+    await discuss_posts_mutate();
+    await help_posts_mutate();
   };
 
   const mutate = async () => {
@@ -114,6 +123,16 @@ const RealDepartment: React.FC<Props> = () => {
     value: number
   ) => {
     setPageNumber(value);
+    await discuss_posts_mutate();
+    await help_posts_mutate();
+  };
+
+  const handleHelpPageChange = async (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setHelpPageNumber(value);
+    await help_posts_mutate();
     await discuss_posts_mutate();
   };
 
@@ -199,15 +218,30 @@ const RealDepartment: React.FC<Props> = () => {
               count={Math.ceil(helpPostsLength / 5)}
               variant="outlined"
               color="secondary"
-              page={pageNumber}
-              onChange={handlePageChange}
+              page={helpPageNumber}
+              onChange={handleHelpPageChange}
             />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
             Item Three
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
-            Item Four
+            <Box>
+              <Button
+                variant="outlined"
+                sx={{ color: "skyblue", marginBottom: 1 }}
+              >
+                资源上传
+              </Button>
+              <FileUpload department_id={Number(id)} />
+            </Box>
+            <Divider sx={{ marginY: 3 }} />
+            <Box display={"flex"} justifyContent={"center"}>
+              {/* TODO: */}
+              <Link href={`/stu/department/resources/${id}`}>
+                查看本社团所有资源
+              </Link>
+            </Box>
           </CustomTabPanel>
         </Box>
       </Paper>

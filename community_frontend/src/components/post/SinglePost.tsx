@@ -22,7 +22,9 @@ import CommentIcon from "@mui/icons-material/Comment";
 import moment from "moment";
 import Prism from "prismjs";
 // import "prismjs/themes/prism.css";
-import "prism-themes/themes/prism-laserwave.css";
+// import "prism-themes/themes/prism-laserwave.css";
+import "../../prism-laserwave.css";
+
 // import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/plugins/autoloader/prism-autoloader";
 import { UserStoreContext } from "../../store/UserStore";

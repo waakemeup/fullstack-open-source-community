@@ -12,6 +12,7 @@ import AbstractEntity from '../shared/utils/Entity';
 import User from '../user/user.entity';
 import { Exclude, Expose } from 'class-transformer';
 import Post from '../post/post.entity';
+import { MyFile } from '../file/file.entity';
 
 @Entity()
 export default class Department extends AbstractEntity {
@@ -62,6 +63,9 @@ export default class Department extends AbstractEntity {
   })
   @JoinTable({ name: 'department_applyuser' })
   public applyUsers: User[];
+
+  @OneToMany(() => MyFile, (file) => file.department)
+  public files: MyFile[];
 
   @Expose({
     name: 'userId',

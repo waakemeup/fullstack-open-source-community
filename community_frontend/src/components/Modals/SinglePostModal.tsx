@@ -30,7 +30,8 @@ import moment from "moment";
 import Prism from "prismjs";
 // import "prismjs/themes/prism.css";
 import "prismjs/plugins/autoloader/prism-autoloader";
-import "prism-themes/themes/prism-laserwave.css";
+// import "prism-themes/themes/prism-laserwave.css";
+import "../../prism-laserwave.css";
 import CommentEditor from "../editor/CommentEditor";
 
 interface Props {

@@ -18,6 +18,7 @@ import Judge from "../views/headerViews/fileManage/Judge";
 import FileManage from "../views/headerViews/fileManage/FileManage";
 import UserManage from "../views/Admin/LevelManage/UserManage";
 import RealDepartment from "../views/stuViews/department/RealDepartment";
+import ResourceView from "../views/stuViews/Resource/ResourceView";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));
@@ -144,6 +145,14 @@ const router = createBrowserRouter([
       </Layout>
     ),
     path: "/stu/department/main/:id",
+  },
+  {
+    element: (
+      <Layout>
+        <ResourceView />
+      </Layout>
+    ),
+    path: "/stu/department/resources/:id",
   },
 ]);
 

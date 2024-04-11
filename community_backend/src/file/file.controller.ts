@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -6,7 +7,9 @@ import {
   HttpStatus,
   Param,
   Post,
+  Req,
   Res,
+  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -14,24 +17,33 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 // import File from '../shared/types/File.interface';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PassThrough, Readable } from 'stream';
 import * as throttle from 'throttle';
 import { FileService } from './file.service';
+import checkFileType from '../shared/utils/checkFileType';
 
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
   @HttpCode(HttpStatus.CREATED)
-  @Post('upload')
+  @Post('upload&departmentid=:id')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
-  public async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: checkFileType,
+    }),
+  )
+  public async uploadFile(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') department_id: number,
+  ) {
     try {
       if (!file) throw new Error('No file uploaded');
-      console.log(file);
-      await this.fileService.saveFile(file);
+      // console.log(file);
+      await this.fileService.saveFile(req, file, department_id);
       return { message: 'File uploaded successfully' };
     } catch (error) {
       console.log(error);
@@ -48,12 +60,18 @@ export class FileController {
         throw new Error('File not found');
       }
 
+      // res.setDefaultEncoding('utf-8');
       res.set({
         'Content-Type': file.mimeType,
         'Content-Disposition': `attachment; filename=${file.originalName}`,
       });
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${file.originalName}`,
+      );
 
       // res.send(file.data);
+      // return new StreamableFile(file.data);
       const throttleRate = 20 * 1024 * 1024; // 设置流控速率为 20MB/s
       const fileStream = Readable.from([file.data]); // 创建可读流，读取文件缓冲区
 
@@ -65,7 +83,17 @@ export class FileController {
 
       passThroughStream.pipe(res); // 将可写流传输到响应对象
     } catch (error) {
+      console.log(error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @Get('department/:id')
+  @UseGuards(JwtAuthGuard)
+  public async getAllFilesInDepartment(
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
+    return await this.fileService.getAllFilesInDepartment(req, id);
   }
 }
