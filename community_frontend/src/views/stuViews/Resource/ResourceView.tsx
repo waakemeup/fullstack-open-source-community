@@ -98,7 +98,10 @@ const ResourceView: React.FC<Props> = () => {
                 backdropFilter: "blur(2px)", // 玻璃滤镜效果，模糊程度为 2px
               }}
             >
-              <Breadcrumbs aria-label="breadcrumb" sx={{ paddingY: "0.4rem" }}>
+              <Breadcrumbs
+                aria-label="breadcrumb"
+                sx={{ paddingY: "0.4rem", paddingLeft: "1rem" }}
+              >
                 <Link underline="hover" color="inherit" href="/stu/dashboard">
                   首页
                 </Link>

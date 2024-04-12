@@ -25,7 +25,12 @@ export class UserService {
   }
 
   public async getByEmail(email: string) {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.userRepository.findOne({
+      relations: ['ownDepartment'],
+      where: {
+        email,
+      },
+    });
     if (!user) {
       throw new HttpException(
         "User with this email doesn't exist",

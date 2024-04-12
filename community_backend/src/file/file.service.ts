@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MyFile } from './file.entity';
 import { Repository } from 'typeorm';
 import { Request } from 'express';
+import LevelEnum from '../shared/enums/LevelEnum';
+import FileStatusEnum from '../shared/enums/FileStatusEnum';
 // import File from '../shared/types/File.interface';
 
 @Injectable()
@@ -49,6 +51,7 @@ export class FileService {
     }
   }
 
+  // SUCCESS
   public async getAllFilesInDepartment(req: Request, department_id: number) {
     try {
       // const { user } = req;
@@ -58,9 +61,99 @@ export class FileService {
           department: {
             id: department_id,
           },
+          status: FileStatusEnum.SUCCESS,
         },
       });
       return files;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // All Files
+  public async getAllFilesInDepartmentByHeader(
+    req: Request,
+    department_id: number,
+  ) {
+    try {
+      const { user } = req;
+      if (user.level !== LevelEnum.HEADER)
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const files = await this.FileRepository.find({
+        // relations: ['user', 'department'],
+        where: {
+          department: {
+            id: department_id,
+          },
+        },
+      });
+      return files;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // 未经审核的所有file
+  public async getAllPendingFilesInDepartmentByHeader(
+    req: Request,
+    department_id: number,
+  ) {
+    try {
+      const { user } = req;
+      if (user.level !== LevelEnum.HEADER)
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const files = await this.FileRepository.find({
+        // relations: ['user', 'department'],
+        where: {
+          department: {
+            id: department_id,
+          },
+          status: FileStatusEnum.PENDING,
+        },
+      });
+      return files;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // status -> success
+  public async postFileToSuccess(req: Request, id: number) {
+    try {
+      const { user } = req;
+      if (user.level !== LevelEnum.HEADER)
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const file = await this.FileRepository.update(id, {
+        status: FileStatusEnum.SUCCESS,
+      });
+      return file;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // status -> fail
+  public async postFileToFail(req: Request, id: number) {
+    try {
+      const { user } = req;
+      if (user.level !== LevelEnum.HEADER)
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const file = await this.FileRepository.update(id, {
+        status: FileStatusEnum.FAIL,
+      });
+      return file;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // delete
+  public async deleteFile(req: Request, id: number) {
+    try {
+      const { user } = req;
+      if (user.level !== LevelEnum.HEADER)
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      await this.FileRepository.delete(id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

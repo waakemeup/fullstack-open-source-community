@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpException,
@@ -96,5 +97,44 @@ export class FileController {
     @Param('id') id: number,
   ) {
     return await this.fileService.getAllFilesInDepartment(req, id);
+  }
+
+  @Get('department/header/:id')
+  @UseGuards(JwtAuthGuard)
+  public async getAllPendingFilesInDepartmentByHeader(
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
+    return await this.fileService.getAllPendingFilesInDepartmentByHeader(
+      req,
+      id,
+    );
+  }
+
+  @Post('tosuccess/:id')
+  @UseGuards(JwtAuthGuard)
+  public async postFileToSuccess(@Req() req: Request, @Param('id') id: number) {
+    return await this.fileService.postFileToSuccess(req, id);
+  }
+
+  @Post('tofail/:id')
+  @UseGuards(JwtAuthGuard)
+  public async postFileToFail(@Req() req: Request, @Param('id') id: number) {
+    return await this.fileService.postFileToFail(req, id);
+  }
+
+  @Get('allbyheader/:id')
+  @UseGuards(JwtAuthGuard)
+  public async getAllFilesInDepartmentByHeader(
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
+    return await this.fileService.getAllFilesInDepartmentByHeader(req, id);
+  }
+
+  @Delete('delete/:id')
+  @UseGuards(JwtAuthGuard)
+  public async deleteFile(@Req() req: Request, @Param('id') id: number) {
+    return await this.fileService.deleteFile(req, id);
   }
 }
