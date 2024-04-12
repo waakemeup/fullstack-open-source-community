@@ -1,10 +1,38 @@
 import axios from "../api";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 
-const downloadFile = async (fileId: number, fileName: string) => {
+const downloadFile = async (
+  fileId: number,
+  fileName: string,
+  totalSize: bigint
+) => {
   try {
+    NProgress.start();
+
+    NProgress.setColor = (color) => {
+      const style = document.createElement("style");
+      style.textContent = `
+      #nprogress .bar {
+        background: ${color} !important;
+        z-index:2000 !important;
+      }
+      `;
+      document.body.appendChild(style);
+    };
+
+    NProgress.setColor("#ff0000");
     const response = await axios.get(`file/${fileId}`, {
       responseType: "blob",
+      onDownloadProgress: (progressEvent) => {
+        const progress = Math.round(
+          (progressEvent.loaded / Number(totalSize)) * 100
+        );
+        console.log(`Download progress: ${progress}%`);
+        NProgress.set(progress / 100);
+      },
     });
+    NProgress.done();
     console.log(response);
 
     // const fileName = response.headers["content-disposition"]

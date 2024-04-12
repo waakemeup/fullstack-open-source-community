@@ -270,7 +270,8 @@ const ResourceView: React.FC<Props> = () => {
                                         // console.log(res);
                                         await downloadFile(
                                           file.id,
-                                          file.originalName
+                                          file.originalName,
+                                          file.size
                                         );
                                       } catch (error: any) {
                                         message.error(error.message);
@@ -302,7 +303,8 @@ const ResourceView: React.FC<Props> = () => {
                                         // console.log(res);
                                         await downloadFile(
                                           file.id,
-                                          file.originalName
+                                          file.originalName,
+                                          file.size
                                         );
                                       } catch (error: any) {
                                         message.error(error.message);

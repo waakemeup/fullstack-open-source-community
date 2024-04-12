@@ -63,12 +63,13 @@ export class FileController {
       // res.setDefaultEncoding('utf-8');
       res.set({
         'Content-Type': file.mimeType,
-        'Content-Disposition': `attachment; filename=${file.originalName}`,
+        'Content-Disposition': `attachment; filename=${encodeURIComponent(file.originalName)}`,
       });
       res.setHeader(
         'Content-Disposition',
-        `attachment; filename=${file.originalName}`,
+        `attachment; filename=${encodeURIComponent(file.originalName)}`,
       );
+      // 防止中文报错encodeURIComponent
 
       // res.send(file.data);
       // return new StreamableFile(file.data);
