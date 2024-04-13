@@ -179,8 +179,8 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
           }}
           color={likeByCurrentUser ? "success" : "default"}
         >
-          {likeLength === 0 ? null : likeLength}
           <FavoriteIcon />
+          {likeLength === 0 ? null : likeLength}
         </IconButton>
 
         <IconButton

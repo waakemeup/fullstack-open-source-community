@@ -3,6 +3,7 @@ import AbstractEntity from '../shared/utils/Entity';
 import User from '../user/user.entity';
 import Post from '../post/post.entity';
 import LikeValueEnum from '../shared/enums/LikeValueEnum';
+import Comment from '../comment/comment.entity';
 
 @Entity()
 export default class Like extends AbstractEntity {
@@ -20,10 +21,9 @@ export default class Like extends AbstractEntity {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   public postOwner: User;
 
-  @ManyToOne(() => Post)
+  @ManyToOne(() => Post, (post) => post.likes)
   public post: Post;
 
-  // TODO:对评论点赞
-  // @ManyToOne(() => Comment)
-  // public comment: Comment;
+  @ManyToOne(() => Comment, (comment) => comment.likes)
+  public comment: Comment;
 }

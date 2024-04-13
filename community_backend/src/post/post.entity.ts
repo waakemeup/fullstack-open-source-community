@@ -14,6 +14,7 @@ import Department from '../department/department.entity';
 import PostTypeEnum from '../shared/enums/PostTypeEnum';
 import { Expose } from 'class-transformer';
 import Like from '../like/like.entity';
+import Comment from '../comment/comment.entity';
 
 @Entity()
 export default class Post extends AbstractEntity {
@@ -45,6 +46,11 @@ export default class Post extends AbstractEntity {
     eager: true,
   })
   public likes: Like[];
+
+  @OneToMany(() => Comment, (comment) => comment.post, {
+    eager: true,
+  })
+  public comments: Comment[];
 
   // @Expose() get department_id() {
   //   return this.department.id;

@@ -13,15 +13,39 @@ export class LikeController {
     return await this.likeService.likeOrUnlikePost(req, id);
   }
 
+  @Post('comment/:id')
+  @UseGuards(JwtAuthGuard)
+  public async likeOrUnlikeComment(
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
+    return await this.likeService.likeOrUnlikeComment(req, id);
+  }
+
   @Get('length/:id')
   @UseGuards(JwtAuthGuard)
   public async likeLength(@Req() req: Request, @Param('id') id: number) {
     return await this.likeService.likeLength(req, id);
   }
 
+  @Get('comment/length/:id')
+  @UseGuards(JwtAuthGuard)
+  public async likeLengthComment(@Req() req: Request, @Param('id') id: number) {
+    return await this.likeService.likeLengthComment(req, id);
+  }
+
   @Get('likebycurrentuser/:id')
   @UseGuards(JwtAuthGuard)
   public async likeByCurrentUser(@Req() req: Request, @Param('id') id: number) {
     return await this.likeService.likeByCurrentUser(req, id);
+  }
+
+  @Get('comment/likebycurrentuser/:id')
+  @UseGuards(JwtAuthGuard)
+  public async commentLikeByCurrentUser(
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
+    return await this.likeService.commentLikeByCurrentUser(req, id);
   }
 }
