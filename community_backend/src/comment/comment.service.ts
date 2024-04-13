@@ -7,6 +7,7 @@ import CreateCommentDTO from './dtos/create-comment.dto';
 import Post from '../post/post.entity';
 import User from '../user/user.entity';
 import { UserService } from '../user/user.service';
+import CommentTypeEnum from '../shared/enums/CommentTypeEnum';
 
 @Injectable()
 export class CommentService {
@@ -55,6 +56,7 @@ export class CommentService {
           post: {
             id: post_id,
           },
+          type: CommentTypeEnum.MAIN,
         },
       });
       return mainComments;

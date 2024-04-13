@@ -49,6 +49,8 @@ interface Props {
 
 const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
   const [commentBody, setCommentBody] = useState<string>();
+  // 评论完毕?
+  const [commentOk, setCommentOk] = useState<boolean>(false);
 
   Prism.plugins.autoloader.languages_path =
     "../../../node_modules/prismjs/components/";
@@ -214,6 +216,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                 </IconButton>
                 <IconButton aria-label="comment">
                   <CommentIcon />
+                  {mainComments?.length === 0 ? null : mainComments?.length}
                 </IconButton>
                 <IconButton aria-label="share">
                   <ShareIcon />
@@ -232,6 +235,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
             <Box sx={{ margin: "5px" }}>
               <CommentEditor
                 setCurHtml={(value: string) => setCommentBody(value)}
+                commentOk={commentOk}
               />
               <Grid
                 container
@@ -249,7 +253,10 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                       });
                       await main_comments_mutate();
                       message.success("评论成功");
-                      // TODO: comment mutate
+                      setCommentOk(true);
+                      setTimeout(() => {
+                        setCommentOk(false);
+                      }, 500);
                     } catch (error: any) {
                       if (commentBody === "<p><br></p>") {
                         message.error("评论不可为空");

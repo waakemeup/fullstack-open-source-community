@@ -103,10 +103,10 @@ const SingleComment: React.FC<Props> = ({ comment, id }) => {
               <ThumbUpIcon sx={{ fontSize: "17px" }} />
               {commentLikeLength === 0 ? null : commentLikeLength}
             </IconButton>
-            <IconButton aria-label="comment">
+            <IconButton aria-label="comment" sx={{ fontSize: "17px" }}>
               <CommentIcon sx={{ fontSize: "17px" }} />
             </IconButton>
-            <IconButton aria-label="share">
+            <IconButton aria-label="share" sx={{ fontSize: "17px" }}>
               <MoreVertIcon sx={{ fontSize: "17px" }} />
             </IconButton>
           </Stack>

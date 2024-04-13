@@ -6,9 +6,10 @@ import { IDomEditor, IEditorConfig, IToolbarConfig } from "@wangeditor/editor";
 
 interface Props {
   setCurHtml: Function;
+  commentOk: boolean;
 }
 
-const CommentEditor: React.FC<Props> = ({ setCurHtml }) => {
+const CommentEditor: React.FC<Props> = ({ setCurHtml, commentOk }) => {
   // editor 实例
   const [editor, setEditor] = useState<IDomEditor | null>(null); // TS 语法
   // const [editor, setEditor] = useState(null)                   // JS 语法
@@ -21,7 +22,7 @@ const CommentEditor: React.FC<Props> = ({ setCurHtml }) => {
     setTimeout(() => {
       setHtml("");
     }, 1500);
-  }, []);
+  }, [commentOk]);
 
   // 工具栏配置
   const toolbarConfig: Partial<IToolbarConfig> = {

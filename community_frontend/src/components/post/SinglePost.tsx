@@ -35,6 +35,7 @@ import SinglePostModal from "../Modals/SinglePostModal";
 import useSWR from "swr";
 import axios from "../../api";
 import { message } from "mui-message";
+import Comment from "../../types/Comment";
 
 interface Props {
   post: Post;
@@ -87,6 +88,16 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
       revalidateOnReconnect: true,
       suspense: true,
     });
+
+  const { data: allMainComments, mutate: main_comments_mutate } = useSWR<
+    Comment[]
+  >(`comment/main/${id}`, {
+    revalidateIfStale: true,
+    revalidateOnFocus: true,
+    revalidateOnMount: true,
+    revalidateOnReconnect: true,
+    suspense: true,
+  });
 
   useEffect(() => {
     Prism.highlightAll();
@@ -188,6 +199,7 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
           onClick={() => setModalOpen(!modalOpen)}
         >
           <CommentIcon />
+          {allMainComments?.length === 0 ? null : allMainComments?.length}
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />
