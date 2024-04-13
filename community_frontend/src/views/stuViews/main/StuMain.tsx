@@ -5,10 +5,10 @@ import {
 
 import Carousel from "nuka-carousel";
 import "./index.scss";
-import { Avatar, Box, Button, Paper } from "@mui/material";
+import { Avatar, Box, Button, Pagination, Paper } from "@mui/material";
 import useSWR from "swr";
 import Department from "../../../types/Department";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 interface Props {}
@@ -25,7 +25,20 @@ const StuMain: React.FC<Props> = () => {
   //   console.log(departmentsData);
   // });
 
+  const [page, setPage] = useState<number>(1);
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
   const navigate = useNavigate();
+
+  const [departmentsByPage, setDepartmentsByPage] = useState<Department[]>();
+
+  useEffect(() => {
+    setDepartmentsByPage(
+      departmentsData?.slice((page - 1) * 12, (page - 1) * 12 + 12)
+    );
+  }, [page, departmentsData]);
 
   return (
     <>
@@ -158,7 +171,7 @@ const StuMain: React.FC<Props> = () => {
             justifyContent={"center"}
             flexWrap={"wrap"}
           >
-            {departmentsData?.map((department) => (
+            {departmentsByPage?.map((department) => (
               <Box
                 sx={{ padding: "1rem" }}
                 display="flex"
@@ -176,10 +189,34 @@ const StuMain: React.FC<Props> = () => {
                 >
                   {department.name}
                 </Avatar>
-                <div style={{ marginTop: 2 }}>{department.name + "社"}</div>
+                <div
+                  style={{
+                    marginTop: 2,
+                    width: "9rem",
+                    whiteSpace: "wrap",
+                    // textOverflow: "",
+                    overflow: "hidden",
+                    display: "inline-block",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {department.name + "社"}
+                </div>
               </Box>
             ))}
           </Box>
+          <Pagination
+            count={Math.ceil((departmentsData?.length as number) / 12)}
+            page={page}
+            onChange={handleChange}
+            variant="outlined"
+            color="primary"
+            sx={{
+              marginTop: "2rem",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          />
         </Box>
       </Box>
     </>
