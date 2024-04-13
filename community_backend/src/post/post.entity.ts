@@ -5,6 +5,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import AbstractEntity from '../shared/utils/Entity';
 import User from '../user/user.entity';
@@ -12,6 +13,7 @@ import { makeId } from '../shared/utils';
 import Department from '../department/department.entity';
 import PostTypeEnum from '../shared/enums/PostTypeEnum';
 import { Expose } from 'class-transformer';
+import Like from '../like/like.entity';
 
 @Entity()
 export default class Post extends AbstractEntity {
@@ -38,6 +40,11 @@ export default class Post extends AbstractEntity {
 
   @Column({ nullable: false, default: PostTypeEnum.DISCUSS })
   public type: PostTypeEnum;
+
+  @OneToMany(() => Like, (like) => like.post, {
+    eager: true,
+  })
+  public likes: Like[];
 
   // @Expose() get department_id() {
   //   return this.department.id;

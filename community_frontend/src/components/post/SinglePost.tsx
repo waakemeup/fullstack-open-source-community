@@ -32,6 +32,9 @@ import RoleEnum from "../../types/enums/RoleEnum";
 import LevelEnum from "../../types/enums/LevelEnum";
 import PostTypeEnum from "../../types/enums/PostTypeEnum";
 import SinglePostModal from "../Modals/SinglePostModal";
+import useSWR from "swr";
+import axios from "../../api";
+import { message } from "mui-message";
 
 interface Props {
   post: Post;
@@ -64,6 +67,27 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  const { data: likeLength, mutate: like_length_mutate } = useSWR<number>(
+    `like/length/${id}`,
+    {
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateOnReconnect: true,
+      suspense: true,
+    }
+  );
+
+  const { data: likeByCurrentUser, mutate: like_by_nowuser_mutate } =
+    useSWR<boolean>(`like/likebycurrentuser/${id}`, {
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateOnReconnect: true,
+      suspense: true,
+    });
+
   useEffect(() => {
     Prism.highlightAll();
   }, []);
@@ -142,9 +166,23 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        <IconButton
+          aria-label="add to favorites"
+          onClick={async () => {
+            try {
+              await axios.post(`like/post/${id}`);
+              await like_length_mutate();
+              await like_by_nowuser_mutate();
+            } catch (error: any) {
+              message.error(error.message);
+            }
+          }}
+          color={likeByCurrentUser ? "success" : "default"}
+        >
+          {likeLength === 0 ? null : likeLength}
           <FavoriteIcon />
         </IconButton>
+
         <IconButton
           aria-label="comment"
           onClick={() => setModalOpen(!modalOpen)}

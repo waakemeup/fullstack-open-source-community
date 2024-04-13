@@ -16,6 +16,7 @@ import LevelEnum from '../shared/enums/LevelEnum';
 import Department from '../department/department.entity';
 import Post from '../post/post.entity';
 import { MyFile } from '../file/file.entity';
+import Like from '../like/like.entity';
 
 @Entity()
 export default class User extends AbstractEntity {
@@ -68,4 +69,7 @@ export default class User extends AbstractEntity {
 
   @OneToMany(() => MyFile, (myFile) => myFile.user)
   public files: MyFile[];
+
+  @OneToMany(() => Like, (like) => like.postOwner)
+  public likes: Like[];
 }
