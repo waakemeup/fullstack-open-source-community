@@ -26,6 +26,23 @@ export class CommentController {
     return await this.commentService.commentOnPost(req, body, id);
   }
 
+  // id一定是MAINID
+  @Post('tocomment/:id')
+  @UseGuards(JwtAuthGuard)
+  public async commentOnComment(
+    @Req() req: Request,
+    @Param('id') id: number,
+    @Body() data: CreateCommentDTO,
+  ) {
+    return await this.commentService.createSubComment(req, id, data);
+  }
+
+  @Get('allsub/:id')
+  @UseGuards(JwtAuthGuard)
+  public async getAllSubComments(@Req() req: Request, @Param('id') id: number) {
+    return await this.commentService.getAllSubComments(req, id);
+  }
+
   // post_id
   @Get('main/:id')
   @UseGuards(JwtAuthGuard)

@@ -1,5 +1,5 @@
 import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import Post from "../../types/Post";
 import {
@@ -38,6 +38,7 @@ import { message } from "mui-message";
 import axios from "../../api";
 import Comment from "../../types/Comment";
 import SingleComment from "../comment/SingleComment";
+import { User } from "../../types/User";
 
 interface Props {
   open: boolean;
@@ -51,6 +52,10 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
   const [commentBody, setCommentBody] = useState<string>();
   // 评论完毕?
   const [commentOk, setCommentOk] = useState<boolean>(false);
+  const [placeHolder, setPlaceHolder] = useState<string>();
+  const [replyTo, setReplyTo] = useState<User>();
+  const [replyCommentId, setReplyCommentId] = useState<number>();
+  const ref = useRef<HTMLDivElement>(null);
 
   Prism.plugins.autoloader.languages_path =
     "../../../node_modules/prismjs/components/";
@@ -102,9 +107,25 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
     Prism.highlightAll();
   }, [post]);
 
+  const scrollToRef = () => {
+    if (ref && ref.current) {
+      const { top, height } = ref.current.getBoundingClientRect();
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      const scrollY = top + scrollTop - window.innerHeight / 2 + height / 2;
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   return (
     <Modal open={open} onClose={handleClose}>
-      <Fade onEntered={() => Prism.highlightAll()} in={open}>
+      <Fade
+        onEntered={() => {
+          Prism.highlightAll();
+          setPlaceHolder(undefined);
+        }}
+        in={open}
+      >
         <ModalDialog sx={{ overflowY: "scroll", maxWidth: "70vw" }}>
           <Box>
             <Card
@@ -214,7 +235,10 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                   <FavoriteIcon />
                   {likeLength === 0 ? null : likeLength}
                 </IconButton>
-                <IconButton aria-label="comment">
+                <IconButton
+                  aria-label="comment"
+                  onClick={() => setPlaceHolder(undefined)}
+                >
                   <CommentIcon />
                   {mainComments?.length === 0 ? null : mainComments?.length}
                 </IconButton>
@@ -236,6 +260,8 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
               <CommentEditor
                 setCurHtml={(value: string) => setCommentBody(value)}
                 commentOk={commentOk}
+                ref={ref}
+                placeHolder={placeHolder}
               />
               <Grid
                 container
@@ -248,15 +274,33 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                   sx={{ backgroundColor: "green" }}
                   onClick={async () => {
                     try {
-                      await axios.post(`comment/topost/${post?.id}`, {
-                        body: commentBody,
-                      });
-                      await main_comments_mutate();
-                      message.success("评论成功");
-                      setCommentOk(true);
-                      setTimeout(() => {
-                        setCommentOk(false);
-                      }, 500);
+                      if (placeHolder === undefined) {
+                        await axios.post(`comment/topost/${post?.id}`, {
+                          body: commentBody,
+                        });
+                        await main_comments_mutate();
+                        message.success("评论成功");
+                        setCommentOk(true);
+                        setTimeout(() => {
+                          setCommentOk(false);
+                        }, 500);
+                      } else {
+                        // 回复某个人
+                        console.log(replyTo, replyCommentId);
+                        await axios.post(
+                          `comment/tocomment/${replyCommentId}`,
+                          {
+                            body: commentBody,
+                            user: replyTo,
+                          }
+                        );
+                        await main_comments_mutate();
+                        message.success("评论成功");
+                        setCommentOk(true);
+                        setTimeout(() => {
+                          setCommentOk(false);
+                        }, 500);
+                      }
                     } catch (error: any) {
                       if (commentBody === "<p><br></p>") {
                         message.error("评论不可为空");
@@ -283,9 +327,22 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
             }`}</Box>
             {mainComments?.map((comment) => (
               <Box key={comment.id}>
-                <SingleComment comment={comment} id={comment.id} />
+                <SingleComment
+                  comment={comment}
+                  id={comment.id}
+                  scrollRefToCenter={scrollToRef}
+                  setReplyUsername={() => {
+                    setPlaceHolder("回复" + comment.user.username);
+                    console.log(comment.user.username);
+                  }}
+                  setReplyTo={(user) => setReplyTo(user)}
+                  setReplyCommentId={(commentId) =>
+                    setReplyCommentId(commentId)
+                  }
+                />
               </Box>
             ))}
+            {/* <Button onClick={() => scrollToRef()}>test</Button> */}
           </Stack>
         </ModalDialog>
       </Fade>

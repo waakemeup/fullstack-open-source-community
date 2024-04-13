@@ -4,7 +4,9 @@ import {
   MinLength,
   MaxLength,
   NotEquals,
+  IsOptional,
 } from 'class-validator';
+import User from '../../user/user.entity';
 
 export default class CreateCommentDTO {
   @IsString()
@@ -15,4 +17,7 @@ export default class CreateCommentDTO {
     message: '评论不可为空',
   })
   body: string;
+
+  @IsOptional()
+  user?: User;
 }

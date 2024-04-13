@@ -64,4 +64,74 @@ export class CommentService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  public async createSubComment(
+    req: Request,
+    main_id: number,
+    data: CreateCommentDTO,
+  ) {
+    try {
+      let target_comment: Comment;
+      const { user } = req;
+      const father_comment = await this.commentRepository.findOne({
+        relations: ['user'],
+        where: {
+          id: main_id,
+        },
+      });
+      // console.log(father_comment);
+
+      // 因为最多两层
+      if (father_comment.type === CommentTypeEnum.MAIN) {
+        target_comment = father_comment;
+      } else if (father_comment.mainComment.type === CommentTypeEnum.MAIN) {
+        target_comment = father_comment.mainComment;
+      }
+      target_comment = await this.commentRepository.findOne({
+        relations: ['post', 'user'],
+        where: {
+          id: target_comment.id,
+        },
+      });
+
+      // console.log(target_comment);
+      const userRecord = await this.userService.getById(user.id);
+      // console.log(userRecord);
+      const subComment = this.commentRepository.create({
+        body: data.body,
+        commentUserId: data.user.id, //id是回复那个人的id
+        mainComment: target_comment, //一定是最高级
+        user: userRecord,
+        type: CommentTypeEnum.SUB,
+        post: target_comment.post,
+      });
+      // console.log(subComment);
+      // SUB不能做父级,都要返回最高级的MAIN
+      await this.commentRepository.save(subComment);
+      return subComment;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async getAllSubComments(req: Request, comment_id: number) {
+    try {
+      const { user } = req;
+      const comments = await this.commentRepository.find({
+        where: {
+          mainComment: {
+            id: comment_id,
+          },
+          type: CommentTypeEnum.SUB,
+        },
+        order: {
+          createdAt: 'ASC',
+        },
+      });
+      return comments;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

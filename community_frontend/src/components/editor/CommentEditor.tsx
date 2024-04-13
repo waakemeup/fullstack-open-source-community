@@ -1,18 +1,21 @@
 import "@wangeditor/editor/dist/css/style.css"; // 引入 css
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, memo } from "react";
 import { Editor, Toolbar } from "@wangeditor/editor-for-react";
 import { IDomEditor, IEditorConfig, IToolbarConfig } from "@wangeditor/editor";
 
 interface Props {
   setCurHtml: Function;
   commentOk: boolean;
+  placeHolder?: string;
 }
 
-const CommentEditor: React.FC<Props> = ({ setCurHtml, commentOk }) => {
+const CommentEditor: React.ForwardRefRenderFunction<HTMLDivElement, Props> = (
+  { setCurHtml, commentOk, placeHolder },
+  ref
+) => {
   // editor 实例
   const [editor, setEditor] = useState<IDomEditor | null>(null); // TS 语法
-  // const [editor, setEditor] = useState(null)                   // JS 语法
 
   // 编辑器内容
   const [html, setHtml] = useState("");
@@ -49,11 +52,10 @@ const CommentEditor: React.FC<Props> = ({ setCurHtml, commentOk }) => {
   }; // TS 语法
   // const toolbarConfig = { }                        // JS 语法
 
-  // 编辑器配置
-  const editorConfig: Partial<IEditorConfig> = {
+  let editorConfig: Partial<IEditorConfig> = {
     // TS 语法
     // const editorConfig = {                         // JS 语法
-    placeholder: "请输入内容...",
+    placeholder: placeHolder || "请输入内容...",
   };
 
   // 及时销毁 editor ，重要！
@@ -62,12 +64,13 @@ const CommentEditor: React.FC<Props> = ({ setCurHtml, commentOk }) => {
       if (editor == null) return;
       editor.destroy();
       setEditor(null);
+      setHtml("");
     };
-  }, [editor]);
+  }, [editor, placeHolder]);
 
   return (
     <>
-      <div style={{ border: "1px solid #ccc", zIndex: 100 }}>
+      <div style={{ border: "1px solid #ccc", zIndex: 100 }} ref={ref}>
         <Toolbar
           editor={editor}
           defaultConfig={toolbarConfig}
@@ -83,7 +86,11 @@ const CommentEditor: React.FC<Props> = ({ setCurHtml, commentOk }) => {
             setCurHtml(editor.getHtml());
           }}
           mode="default"
-          style={{ minHeight: "30px", maxHeight: "15vh", overflowY: "scroll" }}
+          style={{
+            minHeight: "30px",
+            maxHeight: "15vh",
+            overflowY: "scroll",
+          }}
         />
       </div>
       {/* <div style={{ marginTop: "15px" }}>{html}</div> */}
@@ -91,4 +98,4 @@ const CommentEditor: React.FC<Props> = ({ setCurHtml, commentOk }) => {
   );
 };
 
-export default CommentEditor;
+export default memo(forwardRef(CommentEditor));

@@ -1,28 +1,41 @@
-import React from "react";
-import Comment from "../../types/Comment";
+import CommentIcon from "@mui/icons-material/Comment";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import {
   Avatar,
   Box,
   Divider,
   IconButton,
+  Paper,
   Stack,
   Typography,
 } from "@mui/material";
 import { red } from "@mui/material/colors";
 import moment from "moment";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import CommentIcon from "@mui/icons-material/Comment";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { message } from "mui-message";
-import axios from "../../api";
+import React from "react";
 import useSWR from "swr";
+import axios from "../../api";
+import Comment from "../../types/Comment";
+import { User } from "../../types/User";
 
 interface Props {
   comment: Comment;
   id: number;
+  scrollRefToCenter: () => void;
+  setReplyUsername: () => void;
+  setReplyTo: (user: User) => void;
+  setReplyCommentId: (commentId: number) => void;
 }
 
-const SingleComment: React.FC<Props> = ({ comment, id }) => {
+const SingleComment: React.FC<Props> = ({
+  comment,
+  id,
+  scrollRefToCenter,
+  setReplyUsername,
+  setReplyTo,
+  setReplyCommentId,
+}) => {
   const { data: commentLikeLength, mutate: comment_like_length_mutate } =
     useSWR(`like/comment/length/${id}`, {
       revalidateIfStale: true,
@@ -42,6 +55,17 @@ const SingleComment: React.FC<Props> = ({ comment, id }) => {
       suspense: true,
     }
   );
+
+  // TODO:这个怎么刷新？如何调用mutate
+  const { data: allSubComments, mutate: sub_comments_mutate } = useSWR<
+    Comment[]
+  >(`comment/allsub/${comment.id}`, {
+    revalidateIfStale: true,
+    revalidateOnFocus: true,
+    revalidateOnMount: true,
+    revalidateOnReconnect: true,
+    suspense: true,
+  });
 
   return (
     <Box>
@@ -103,13 +127,31 @@ const SingleComment: React.FC<Props> = ({ comment, id }) => {
               <ThumbUpIcon sx={{ fontSize: "17px" }} />
               {commentLikeLength === 0 ? null : commentLikeLength}
             </IconButton>
-            <IconButton aria-label="comment" sx={{ fontSize: "17px" }}>
+            <IconButton
+              aria-label="comment"
+              sx={{ fontSize: "17px" }}
+              onClick={() => {
+                scrollRefToCenter();
+                setReplyUsername();
+                setReplyTo(comment.user);
+                setReplyCommentId(comment.id);
+              }}
+            >
               <CommentIcon sx={{ fontSize: "17px" }} />
             </IconButton>
             <IconButton aria-label="share" sx={{ fontSize: "17px" }}>
               <MoreVertIcon sx={{ fontSize: "17px" }} />
             </IconButton>
           </Stack>
+        </Box>
+        {/* TODO:sub comment ui*/}
+        <Box sx={{ paddingLeft: "2.6rem" }}>
+          <Paper elevation={10} sx={{ backgroundColor: "darkgrey" }}>
+            {allSubComments?.length !== 0 &&
+              allSubComments?.map((subComment) => {
+                return <Box key={subComment.id}>{subComment.id}</Box>;
+              })}
+          </Paper>
         </Box>
       </Stack>
       <Divider
