@@ -3,13 +3,13 @@ import {
   KeyboardArrowRightRounded,
 } from "@mui/icons-material";
 
-import Carousel from "nuka-carousel";
-import "./index.scss";
 import { Avatar, Box, Button, Pagination, Paper } from "@mui/material";
-import useSWR from "swr";
-import Department from "../../../types/Department";
+import Carousel from "nuka-carousel";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import useSWR from "swr";
+import Department from "../../../types/Department";
+import "./index.scss";
 
 interface Props {}
 
@@ -35,6 +35,7 @@ const StuMain: React.FC<Props> = () => {
   const [departmentsByPage, setDepartmentsByPage] = useState<Department[]>();
 
   useEffect(() => {
+    console.log(departmentsData);
     setDepartmentsByPage(
       departmentsData?.slice((page - 1) * 12, (page - 1) * 12 + 12)
     );

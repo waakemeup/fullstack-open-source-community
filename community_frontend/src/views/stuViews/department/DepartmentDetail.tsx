@@ -69,20 +69,26 @@ const DepartmentDetail: React.FC<Props> = () => {
             <Typography variant="h2" component={"h1"}>
               {detail?.name + "社: " + detail?.title}
             </Typography>
-            <Button
-              variant="contained"
-              onClick={() => {
-                axios.post(`department/stu/apply`, { id });
-                setApply(!apply);
-              }}
-            >
-              {
-                // detail?.applyUsers.find(
-                //   (user) => user.id === userStore.user?.id
-                // ) &&
-                apply ? "申请中" : "申请加入"
-              }
-            </Button>
+            {detail?.users.some((user) => user.id === userStore.user?.id) ? (
+              <Button variant="contained" color="warning">
+                已加入
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  axios.post(`department/stu/apply`, { id });
+                  setApply(!apply);
+                }}
+              >
+                {
+                  // detail?.applyUsers.find(
+                  //   (user) => user.id === userStore.user?.id
+                  // ) &&
+                  apply ? "申请中" : "申请加入"
+                }
+              </Button>
+            )}
           </Stack>
           <Stack
             direction={"row"}
