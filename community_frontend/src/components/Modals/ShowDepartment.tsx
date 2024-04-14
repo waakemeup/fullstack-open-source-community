@@ -1,4 +1,4 @@
-import { Box, Input, Modal } from "@mui/material";
+import { Box, Input, Modal, ModalDialog, Typography } from "@mui/joy";
 import React, { memo } from "react";
 
 interface Props {
@@ -31,14 +31,34 @@ const ShowDepartment: React.FC<Props> = ({
 }) => {
   return (
     <Modal open={open} onClose={() => handleClose()}>
-      <Box flex="col" sx={style}>
-        <h2>name</h2>
-        <Input value={name} readOnly />
-        <h2>title</h2>
-        <Input value={title} readOnly />
-        <h2>description</h2>
-        <Input value={description} readOnly />
-      </Box>
+      <ModalDialog sx={{ overflowY: "scroll", maxWidth: "70vw" }}>
+        <Box
+          flex="col"
+          sx={{
+            // maxWidth: "100%",
+            maxHeight: "85vh",
+            minWidth: "65vw",
+            overflowY: "scroll",
+          }}
+        >
+          <h2>name</h2>
+          <Input value={name} readOnly />
+          <h2>title</h2>
+          <Typography component={"span"} variant="soft">
+            {title}
+          </Typography>
+          {/* <Input value={title} readOnly /> */}
+          <h2>description</h2>
+          {/* <Input value={description} readOnly /> */}
+          <Typography component={"span"} variant="soft">
+            <div
+              dangerouslySetInnerHTML={{
+                __html: description as string,
+              }}
+            />
+          </Typography>
+        </Box>
+      </ModalDialog>
     </Modal>
   );
 };

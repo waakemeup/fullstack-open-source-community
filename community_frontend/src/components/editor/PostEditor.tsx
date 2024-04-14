@@ -24,7 +24,9 @@ const PostEditor: React.FC<Props> = ({ setCurHtml }) => {
   }, []);
 
   // 工具栏配置
-  const toolbarConfig: Partial<IToolbarConfig> = {}; // TS 语法
+  const toolbarConfig: Partial<IToolbarConfig> = {
+    insertKeys: { index: 26, keys: ["codeSelectLang"] },
+  }; // TS 语法
   // const toolbarConfig = { }                        // JS 语法
 
   // 编辑器配置
