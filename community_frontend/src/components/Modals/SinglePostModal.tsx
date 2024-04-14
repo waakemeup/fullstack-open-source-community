@@ -55,6 +55,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
   const [placeHolder, setPlaceHolder] = useState<string>();
   const [replyTo, setReplyTo] = useState<User>();
   const [replyCommentId, setReplyCommentId] = useState<number>();
+  const [childFlag, setChildFlag] = useState<boolean>(true);
   const ref = useRef<HTMLDivElement>(null);
 
   Prism.plugins.autoloader.languages_path =
@@ -116,6 +117,16 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
       ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
+
+  // const { data: allSubComments, mutate: sub_comments_mutate } = useSWR<
+  //   Comment[]
+  // >(replyCommentId !== undefined ? `comment/allsub/${replyCommentId}` : "", {
+  //   revalidateIfStale: true,
+  //   revalidateOnFocus: true,
+  //   revalidateOnMount: true,
+  //   revalidateOnReconnect: true,
+  //   suspense: true,
+  // });
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -297,6 +308,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                         await main_comments_mutate();
                         message.success("评论成功");
                         setCommentOk(true);
+                        setChildFlag(!childFlag);
                         setTimeout(() => {
                           setCommentOk(false);
                         }, 500);
@@ -339,6 +351,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                   setReplyCommentId={(commentId) =>
                     setReplyCommentId(commentId)
                   }
+                  flag={childFlag}
                 />
               </Box>
             ))}

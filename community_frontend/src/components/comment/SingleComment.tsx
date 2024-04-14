@@ -13,7 +13,7 @@ import {
 import { red } from "@mui/material/colors";
 import moment from "moment";
 import { message } from "mui-message";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import axios from "../../api";
 import Comment from "../../types/Comment";
@@ -26,6 +26,7 @@ interface Props {
   setReplyUsername: () => void;
   setReplyTo: (user: User) => void;
   setReplyCommentId: (commentId: number) => void;
+  flag: boolean; //是否是子评论
 }
 
 const SingleComment: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const SingleComment: React.FC<Props> = ({
   setReplyUsername,
   setReplyTo,
   setReplyCommentId,
+  flag,
 }) => {
   const { data: commentLikeLength, mutate: comment_like_length_mutate } =
     useSWR(`like/comment/length/${id}`, {
@@ -66,6 +68,14 @@ const SingleComment: React.FC<Props> = ({
     revalidateOnReconnect: true,
     suspense: true,
   });
+
+  const [subComments, setSubComments] = useState<Comment[]>();
+
+  useEffect(() => {
+    const fn = async () => await sub_comments_mutate();
+    fn();
+    setSubComments(allSubComments);
+  }, [allSubComments, flag]);
 
   return (
     <Box>
@@ -147,8 +157,8 @@ const SingleComment: React.FC<Props> = ({
         {/* TODO:sub comment ui*/}
         <Box sx={{ paddingLeft: "2.6rem" }}>
           <Paper elevation={10} sx={{ backgroundColor: "darkgrey" }}>
-            {allSubComments?.length !== 0 &&
-              allSubComments?.map((subComment) => {
+            {subComments?.length !== 0 &&
+              subComments?.map((subComment) => {
                 return <Box key={subComment.id}>{subComment.id}</Box>;
               })}
           </Paper>
