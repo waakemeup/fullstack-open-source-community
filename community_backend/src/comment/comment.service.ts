@@ -74,7 +74,7 @@ export class CommentService {
       let target_comment: Comment;
       const { user } = req;
       const father_comment = await this.commentRepository.findOne({
-        relations: ['user'],
+        relations: ['user', 'mainComment'],
         where: {
           id: main_id,
         },
@@ -100,6 +100,7 @@ export class CommentService {
       const subComment = this.commentRepository.create({
         body: data.body,
         commentUserId: data.user.id, //id是回复那个人的id
+        commentUsername: data.user.username, //id是回复那个人的id
         mainComment: target_comment, //一定是最高级
         user: userRecord,
         type: CommentTypeEnum.SUB,
@@ -119,6 +120,7 @@ export class CommentService {
     try {
       const { user } = req;
       const comments = await this.commentRepository.find({
+        relations: ['user'],
         where: {
           mainComment: {
             id: comment_id,

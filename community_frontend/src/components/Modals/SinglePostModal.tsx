@@ -13,6 +13,7 @@ import {
   Fade,
   Grid,
   IconButton,
+  Pagination,
   Paper,
   Stack,
   Typography,
@@ -57,6 +58,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
   const [replyCommentId, setReplyCommentId] = useState<number>();
   const [childFlag, setChildFlag] = useState<boolean>(true);
   const ref = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState<number>(1); //留言分页
 
   Prism.plugins.autoloader.languages_path =
     "../../../node_modules/prismjs/components/";
@@ -103,6 +105,18 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
     suspense: true,
   });
   // console.log(post);
+
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
+  const [commentsByPage, setCommentsByPage] = useState<Comment[]>();
+
+  useEffect(() => {
+    setCommentsByPage(
+      mainComments?.slice((page - 1) * 10, (page - 1) * 10 + 10)
+    );
+  }, [page, mainComments]);
 
   useEffect(() => {
     Prism.highlightAll();
@@ -337,7 +351,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
             >{`全部评论${
               mainComments?.length === 0 ? "" : "(" + mainComments?.length + ")"
             }`}</Box>
-            {mainComments?.map((comment) => (
+            {commentsByPage?.map((comment) => (
               <Box key={comment.id}>
                 <SingleComment
                   comment={comment}
@@ -352,9 +366,25 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                     setReplyCommentId(commentId)
                   }
                   flag={childFlag}
+                  changeFatherFlag={() => setChildFlag(!childFlag)}
+                  setSubCommentPlaceHolder={(value: string) =>
+                    setPlaceHolder(value)
+                  }
                 />
               </Box>
             ))}
+            <Pagination
+              count={Math.ceil((mainComments?.length as number) / 10)}
+              page={page}
+              onChange={handleChange}
+              variant="outlined"
+              color="primary"
+              sx={{
+                marginTop: "2rem",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            />
             {/* <Button onClick={() => scrollToRef()}>test</Button> */}
           </Stack>
         </ModalDialog>

@@ -32,6 +32,11 @@ export default class Comment extends AbstractEntity {
   @Column()
   public commentUserId: number;
 
+  @Column({
+    nullable: true,
+  })
+  public commentUsername: string;
+
   // 留言者
   @ManyToOne(() => User, (user) => user.comments)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
