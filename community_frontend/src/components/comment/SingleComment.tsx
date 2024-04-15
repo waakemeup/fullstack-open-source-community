@@ -6,6 +6,8 @@ import {
   Box,
   Divider,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Stack,
   Typography,
@@ -20,6 +22,7 @@ import Comment from "../../types/Comment";
 import { User } from "../../types/User";
 import { UserStoreContext } from "../../store/UserStore";
 import LikeValueEnum from "../../types/enums/LikeValueEnum";
+import SingleSubCommentDeleteIcon from "./SingleSubCommentDeleteIcon";
 
 interface Props {
   comment: Comment;
@@ -31,6 +34,7 @@ interface Props {
   flag: boolean; //是否是子评论
   changeFatherFlag: () => void; //触发更新
   setSubCommentPlaceHolder: (value: string) => void;
+  commentMutate: Function;
 }
 
 const SingleComment: React.FC<Props> = ({
@@ -43,6 +47,7 @@ const SingleComment: React.FC<Props> = ({
   flag,
   changeFatherFlag,
   setSubCommentPlaceHolder,
+  commentMutate,
 }) => {
   const userStore = useContext(UserStoreContext);
 
@@ -83,6 +88,24 @@ const SingleComment: React.FC<Props> = ({
     fn();
     setSubComments(allSubComments);
   }, [allSubComments, flag]);
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null);
+  const open2 = Boolean(anchorEl2);
+  const handleClick2 = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl2(event.currentTarget);
+  };
+  const handleClose2 = () => {
+    setAnchorEl2(null);
+  };
 
   return (
     <Box>
@@ -156,9 +179,39 @@ const SingleComment: React.FC<Props> = ({
             >
               <CommentIcon sx={{ fontSize: "17px" }} />
             </IconButton>
-            <IconButton aria-label="share" sx={{ fontSize: "17px" }}>
-              <MoreVertIcon sx={{ fontSize: "17px" }} />
-            </IconButton>
+            <>
+              <IconButton
+                aria-label="share"
+                sx={{ fontSize: "17px" }}
+                onClick={handleClick}
+              >
+                <MoreVertIcon sx={{ fontSize: "17px" }} />
+              </IconButton>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                  "aria-labelledby": "basic-button",
+                }}
+              >
+                <MenuItem
+                  onClick={async () => {
+                    try {
+                      handleClose();
+                      await axios.delete(`comment/delete/${id}`);
+                      await commentMutate();
+                      message.info("删除成功");
+                    } catch (error: any) {
+                      message.error(error.response.data.message);
+                    }
+                  }}
+                >
+                  删除
+                </MenuItem>
+              </Menu>
+            </>
           </Stack>
         </Box>
         {/* TODO:sub comment ui*/}
@@ -249,7 +302,6 @@ const SingleComment: React.FC<Props> = ({
                                 0
                               )}
                         </IconButton>
-                        {/* TODO:"回复" + comment.user.username */}
                         <IconButton
                           aria-label="comment"
                           sx={{ fontSize: "17px" }}
@@ -265,12 +317,45 @@ const SingleComment: React.FC<Props> = ({
                         >
                           <CommentIcon sx={{ fontSize: "17px" }} />
                         </IconButton>
-                        <IconButton
-                          aria-label="share"
-                          sx={{ fontSize: "17px" }}
-                        >
-                          <MoreVertIcon sx={{ fontSize: "17px" }} />
-                        </IconButton>
+                        {/* <>
+                          <IconButton
+                            aria-label="share"
+                            sx={{ fontSize: "17px" }}
+                            onClick={handleClick2}
+                          >
+                            <MoreVertIcon sx={{ fontSize: "17px" }} />
+                          </IconButton>
+                          <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl2} //TODO:错在这,这个anchorEl2每次都挂载在最后一个元素上
+                            open={open2}
+                            onClose={handleClose2}
+                            MenuListProps={{
+                              "aria-labelledby": "basic-button2",
+                            }}
+                          >
+                            <MenuItem
+                              onClick={async () => {
+                                try {
+                                  handleClose2();
+                                  await axios.delete(
+                                    `comment/delete/${subComment.id}`
+                                  );
+                                  await sub_comments_mutate();
+                                  message.info("删除成功");
+                                } catch (error: any) {
+                                  message.error(error.response.data.message);
+                                }
+                              }}
+                            >
+                              删除
+                            </MenuItem>
+                          </Menu>
+                        </> */}
+                        <SingleSubCommentDeleteIcon
+                          subComment={subComment}
+                          fatherMutate={sub_comments_mutate}
+                        />
                       </Stack>
                     </Box>
                   </Stack>

@@ -60,6 +60,9 @@ export class CommentService {
           },
           type: CommentTypeEnum.MAIN,
         },
+        order: {
+          createdAt: 'ASC',
+        },
       });
       return mainComments;
     } catch (error) {

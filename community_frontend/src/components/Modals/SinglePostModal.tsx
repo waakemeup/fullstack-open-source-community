@@ -370,6 +370,7 @@ const SinglePostModal: React.FC<Props> = ({ open, handleClose, id }) => {
                   setSubCommentPlaceHolder={(value: string) =>
                     setPlaceHolder(value)
                   }
+                  commentMutate={main_comments_mutate}
                 />
               </Box>
             ))}
