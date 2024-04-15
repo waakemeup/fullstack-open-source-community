@@ -185,7 +185,14 @@ const RealDepartment: React.FC<Props> = () => {
             {/* Item One */}
             <Stack direction={"column"} spacing={2}>
               {discussPosts?.map((post: Post) => {
-                return <SinglePost key={post.id} id={post.id} post={post} />;
+                return (
+                  <SinglePost
+                    key={post.id}
+                    id={post.id}
+                    post={post}
+                    postMutate={discuss_posts_mutate}
+                  />
+                );
               })}
             </Stack>
             <Pagination
@@ -206,7 +213,14 @@ const RealDepartment: React.FC<Props> = () => {
             {/* Item Two */}
             <Stack direction={"column"} spacing={2}>
               {helpPosts?.map((post: Post) => {
-                return <SinglePost key={post.id} id={post.id} post={post} />;
+                return (
+                  <SinglePost
+                    key={post.id}
+                    id={post.id}
+                    post={post}
+                    postMutate={help_posts_mutate}
+                  />
+                );
               })}
             </Stack>
             <Pagination

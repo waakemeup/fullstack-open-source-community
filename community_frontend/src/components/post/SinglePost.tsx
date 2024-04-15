@@ -10,6 +10,8 @@ import {
   CardHeader,
   IconButton,
   IconButtonProps,
+  Menu,
+  MenuItem,
   styled,
   Typography,
 } from "@mui/material";
@@ -40,6 +42,7 @@ import Comment from "../../types/Comment";
 interface Props {
   post: Post;
   id: number;
+  postMutate: Function;
 }
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -57,7 +60,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-const SinglePost: React.FC<Props> = ({ post, id }) => {
+const SinglePost: React.FC<Props> = ({ post, id, postMutate }) => {
   Prism.plugins.autoloader.languages_path =
     "../../../node_modules/prismjs/components/";
   const [expanded, setExpanded] = useState(false);
@@ -103,6 +106,15 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
     Prism.highlightAll();
   }, []);
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <Card sx={{ maxWidth: "100%", maxHeight: "300px" }}>
       <SinglePostModal
@@ -118,21 +130,47 @@ const SinglePost: React.FC<Props> = ({ post, id }) => {
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            {(userStore.user?.role === RoleEnum.ADMIN ||
-              userStore.user?.level === LevelEnum.HEADER) &&
-              post.type === PostTypeEnum.DISCUSS && (
-                <div style={{ fontSize: "1rem", color: "salmon" }}>讨论</div>
-              )}
-            {(userStore.user?.role === RoleEnum.ADMIN ||
-              userStore.user?.level === LevelEnum.HEADER) &&
-              post.type === PostTypeEnum.HELP && (
-                <div style={{ fontSize: "1rem", color: "greenyellow" }}>
-                  求助
-                </div>
-              )}
-            <MoreVertIcon />
-          </IconButton>
+          <>
+            <IconButton aria-label="settings" onClick={handleClick}>
+              {(userStore.user?.role === RoleEnum.ADMIN ||
+                userStore.user?.level === LevelEnum.HEADER) &&
+                post.type === PostTypeEnum.DISCUSS && (
+                  <div style={{ fontSize: "1rem", color: "salmon" }}>讨论</div>
+                )}
+              {(userStore.user?.role === RoleEnum.ADMIN ||
+                userStore.user?.level === LevelEnum.HEADER) &&
+                post.type === PostTypeEnum.HELP && (
+                  <div style={{ fontSize: "1rem", color: "greenyellow" }}>
+                    求助
+                  </div>
+                )}
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem
+                onClick={async () => {
+                  try {
+                    handleClose();
+                    await axios.delete(`post/delete/${id}`);
+                    await postMutate();
+                    message.info("删除成功");
+                  } catch (error: any) {
+                    message.error(error.response.data.message);
+                  }
+                }}
+              >
+                删除
+              </MenuItem>
+            </Menu>
+          </>
         }
         title={
           post.user.username +

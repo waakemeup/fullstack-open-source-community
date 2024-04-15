@@ -124,7 +124,14 @@ function Main() {
             {/* Item One */}
             <Stack direction={"column"} spacing={2}>
               {posts?.map((post: Post) => {
-                return <SinglePost key={post.id} id={post.id} post={post} />;
+                return (
+                  <SinglePost
+                    key={post.id}
+                    id={post.id}
+                    post={post}
+                    postMutate={post_mutate}
+                  />
+                );
               })}
             </Stack>
             <Pagination
