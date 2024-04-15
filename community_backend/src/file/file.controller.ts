@@ -52,6 +52,12 @@ export class FileController {
     }
   }
 
+  @Get('user')
+  @UseGuards(JwtAuthGuard)
+  public async getAllFilesByUserId(@Req() req: Request) {
+    return await this.fileService.getAllFilesByUserId(req);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   public async downloadFile(@Param('id') id: number, @Res() res: Response) {

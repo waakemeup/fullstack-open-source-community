@@ -151,10 +151,31 @@ export class FileService {
   public async deleteFile(req: Request, id: number) {
     try {
       const { user } = req;
-      if (user.level !== LevelEnum.HEADER)
-        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const file = await this.FileRepository.findOne(id);
+      if (user.level !== LevelEnum.HEADER && file.user.id !== user.id)
+        throw new HttpException(
+          'You are not header or file owner',
+          HttpStatus.FORBIDDEN,
+        );
       await this.FileRepository.delete(id);
     } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async getAllFilesByUserId(req: Request) {
+    try {
+      const { user } = req;
+      const files = await this.FileRepository.find({
+        where: {
+          user: {
+            id: user.id,
+          },
+        },
+      });
+      return files;
+    } catch (error) {
+      console.log(error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }

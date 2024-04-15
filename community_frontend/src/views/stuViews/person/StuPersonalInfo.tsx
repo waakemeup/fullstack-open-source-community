@@ -55,7 +55,7 @@ function StuPersonalInfo() {
           alignItems={"center"}
           flexDirection={"column"}
           justifyContent={"center"}
-          onClick={() => navigate(`/changepassword`)}
+          onClick={() => navigate(`myresource`)}
           bgcolor={"Menu"}
           border={3}
           borderColor={"Highlight"}

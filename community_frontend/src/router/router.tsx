@@ -19,6 +19,7 @@ import FileManage from "../views/headerViews/fileManage/FileManage";
 import UserManage from "../views/Admin/LevelManage/UserManage";
 import RealDepartment from "../views/stuViews/department/RealDepartment";
 import ResourceView from "../views/stuViews/Resource/ResourceView";
+import MyResources from "../views/stuViews/person/MyResources";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));
@@ -85,8 +86,19 @@ const router = createBrowserRouter([
         path: "postdepartments",
       },
       {
-        element: <StuPersonalInfo />,
+        element: (
+          <>
+            <StuPersonalInfo />
+            <Outlet />
+          </>
+        ),
         path: "myinfo",
+        children: [
+          {
+            element: <MyResources />,
+            path: "myresource",
+          },
+        ],
       },
       {
         element: <DepartmentDetail />,
