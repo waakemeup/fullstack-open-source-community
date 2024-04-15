@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -51,5 +52,17 @@ export class CommentController {
     @Param('id') id: number,
   ) {
     return await this.commentService.getAllMainComments(req, id);
+  }
+
+  @Get('user')
+  @UseGuards(JwtAuthGuard)
+  public async getAllCommentsByUserId(@Req() req: Request) {
+    return await this.commentService.getAllCommentsByUserId(req);
+  }
+
+  @Delete('delete/:id')
+  @UseGuards(JwtAuthGuard)
+  public async deleteComment(@Req() req: Request, @Param('id') id: number) {
+    return await this.commentService.deleteComment(req, id);
   }
 }

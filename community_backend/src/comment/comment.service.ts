@@ -8,6 +8,7 @@ import Post from '../post/post.entity';
 import User from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import CommentTypeEnum from '../shared/enums/CommentTypeEnum';
+import LevelEnum from '../shared/enums/LevelEnum';
 
 @Injectable()
 export class CommentService {
@@ -133,6 +134,49 @@ export class CommentService {
       });
       return comments;
     } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async getAllCommentsByUserId(req: Request) {
+    try {
+      const { user } = req;
+      const comments = await this.commentRepository.find({
+        relations: ['post'],
+        where: {
+          user: {
+            id: user.id,
+          },
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+      // console.log(comments);
+      return comments;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async deleteComment(req: Request, id: number) {
+    try {
+      const { user } = req;
+      const comment = await this.commentRepository.findOne({
+        relations: ['post', 'user'],
+        where: {
+          id,
+        },
+      });
+      if (user.level !== LevelEnum.HEADER && comment.user.id !== user.id)
+        throw new HttpException(
+          'You are not header or owner',
+          HttpStatus.FORBIDDEN,
+        );
+      await this.commentRepository.delete(id);
+      return true;
+    } catch (error) {
+      console.log(error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }

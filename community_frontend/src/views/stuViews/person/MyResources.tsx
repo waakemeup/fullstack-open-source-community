@@ -420,7 +420,7 @@ const MyResources: React.FC<Props> = () => {
                                       ? "已上传"
                                       : file.status === FileStatusEnum.PENDING
                                       ? "待审核"
-                                      : "已拒绝"}
+                                      : "未通过"}
                                   </Button>
                                 </div>
                               </Grid>

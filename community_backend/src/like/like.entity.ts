@@ -24,6 +24,8 @@ export default class Like extends AbstractEntity {
   @ManyToOne(() => Post, (post) => post.likes)
   public post: Post;
 
-  @ManyToOne(() => Comment, (comment) => comment.likes)
+  @ManyToOne(() => Comment, (comment) => comment.likes, {
+    onDelete: 'CASCADE',
+  })
   public comment: Comment;
 }

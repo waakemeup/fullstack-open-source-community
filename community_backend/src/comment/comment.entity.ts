@@ -46,10 +46,13 @@ export default class Comment extends AbstractEntity {
   public post: Post;
 
   // 副留言对主留言多对一
-  @ManyToOne(() => Comment, { nullable: true })
+  @ManyToOne(() => Comment, { nullable: true, onDelete: 'CASCADE' })
   mainComment: Comment;
 
-  @OneToMany(() => Like, (like) => like.comment, { eager: true })
+  @OneToMany(() => Like, (like) => like.comment, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   public likes: Like[];
 
   // @Expose()
