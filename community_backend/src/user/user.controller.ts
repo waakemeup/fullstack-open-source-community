@@ -74,4 +74,24 @@ export class UserController {
   ) {
     return await this.userService.updateUserByAdmin(req, id, data);
   }
+
+  @Post('updatepassword')
+  @UseGuards(JwtAuthGuard)
+  public async updatePassword(
+    @Req() req: Request,
+    @Body()
+    data: {
+      id: number;
+      oldPassword: string;
+      newPassword: string;
+      newPassword2: string;
+    },
+  ) {
+    return await this.userService.updatePassword(
+      req,
+      data.oldPassword,
+      data.newPassword,
+      data.newPassword2,
+    );
+  }
 }

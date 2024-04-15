@@ -186,7 +186,6 @@ const StuMain: React.FC<Props> = () => {
                   sx={{ width: "9rem", height: "9rem" }}
                   src={department.imgUrl}
                   alt={department.name}
-                  // TODO:跳到详情页
                 >
                   {department.name}
                 </Avatar>

@@ -6,6 +6,7 @@ import CreateUserDTO from './dto/create-user.dto';
 import LevelEnum from '../shared/enums/LevelEnum';
 import { Request } from 'express';
 import RoleEnum from '../shared/enums/RoleEnum';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -128,8 +129,34 @@ export class UserService {
     }
   }
 
-  // TODO:修改密码
-  async updatePassword(user: CreateUserDTO) {}
+  // TODO:修改密码 id:user_id
+  public async updatePassword(
+    req: Request,
+    oldPassword: string,
+    newPassword: string,
+    newPassword2: string,
+  ) {
+    try {
+      const user = await this.userRepository.findOne(req.user.id);
+      if (newPassword !== newPassword2)
+        throw new HttpException(
+          '两次输入的新密码不一致',
+          HttpStatus.BAD_REQUEST,
+        );
+      if (oldPassword === newPassword)
+        throw new HttpException('新旧密码一致', HttpStatus.BAD_REQUEST);
+      if (await argon2.verify(user.password, oldPassword)) {
+        const hashedPassword = await argon2.hash(newPassword);
+        await this.userRepository.update(req.user.id, {
+          password: hashedPassword,
+        });
+      } else {
+        throw new HttpException('旧密码不正确', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 
   async selectAllAviHeaderUser(req: Request) {
     try {

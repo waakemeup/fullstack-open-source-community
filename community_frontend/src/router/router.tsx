@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { createBrowserRouter, Outlet, useLocation } from "react-router-dom";
 import Layout from "../layouts/Layout";
-import ForgetPassword from "../views/forgetpassword/ForgetPassword";
+import ChangePassword from "../views/changepassword/ChangePassword";
 import DepartmentInfo from "../views/infomanage/DepartmentInfo";
 import PostInfo from "../views/infomanage/PostInfo";
 import Login from "../views/login/Login";
@@ -32,9 +32,13 @@ const router = createBrowserRouter([
     element: <SignUp />,
     path: "/signup",
   },
+  // {
+  //   element: <ForgetPassword />,
+  //   path: "/forget",
+  // },
   {
-    element: <ForgetPassword />,
-    path: "/forget",
+    element: <ChangePassword />,
+    path: "/changepassword",
   },
   {
     element: (
