@@ -21,7 +21,7 @@ export default class Like extends AbstractEntity {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   public postOwner: User;
 
-  @ManyToOne(() => Post, (post) => post.likes)
+  @ManyToOne(() => Post, (post) => post.likes, { onDelete: 'CASCADE' })
   public post: Post;
 
   @ManyToOne(() => Comment, (comment) => comment.likes, {

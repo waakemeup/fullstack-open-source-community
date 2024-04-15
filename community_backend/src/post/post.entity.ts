@@ -44,6 +44,7 @@ export default class Post extends AbstractEntity {
 
   @OneToMany(() => Like, (like) => like.post, {
     eager: true,
+    onDelete: 'CASCADE',
   })
   public likes: Like[];
 

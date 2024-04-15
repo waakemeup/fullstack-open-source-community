@@ -69,7 +69,7 @@ const MyComments: React.FC<Props> = () => {
                 fontWeight: "bold",
               }}
             >
-              资源管理
+              评论管理
             </Box>
             <Box
               sx={{

@@ -42,7 +42,10 @@ export default class Comment extends AbstractEntity {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   public user: User;
 
-  @ManyToOne(() => Post, (post) => post.comments, { nullable: false })
+  @ManyToOne(() => Post, (post) => post.comments, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   public post: Post;
 
   // 副留言对主留言多对一

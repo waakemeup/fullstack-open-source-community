@@ -21,6 +21,7 @@ import RealDepartment from "../views/stuViews/department/RealDepartment";
 import ResourceView from "../views/stuViews/Resource/ResourceView";
 import MyResources from "../views/stuViews/person/MyResources";
 import MyComments from "../views/stuViews/person/MyComments";
+import MyPosts from "../views/stuViews/person/MyPosts";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
           {
             element: <MyComments />,
             path: "mycomments",
+          },
+          {
+            element: <MyPosts />,
+            path: "myposts",
           },
         ],
       },

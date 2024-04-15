@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -23,6 +24,12 @@ export class PostController {
     @Body() postData: CreatePostDTO,
   ) {
     return await this.postService.createPost(req, postData);
+  }
+
+  @Get('all/user')
+  @UseGuards(JwtAuthGuard)
+  public async getAllPostsByUserId(@Req() req: Request) {
+    return await this.postService.getAllPostsByUserId(req);
   }
 
   @Get(':id')
@@ -90,5 +97,11 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   public async getHeaderAllPostsLength(@Req() req: Request) {
     return await this.postService.getHeaderAllPostsLength(req);
+  }
+
+  @Delete('delete/:id')
+  @UseGuards(JwtAuthGuard)
+  public async deletePost(@Req() req: Request, @Param('id') id: number) {
+    return await this.postService.deletePost(req, id);
   }
 }

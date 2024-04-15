@@ -109,7 +109,7 @@ function StuPersonalInfo() {
           alignItems={"center"}
           flexDirection={"column"}
           justifyContent={"center"}
-          onClick={() => navigate(`/changepassword`)}
+          onClick={() => navigate(`myposts`)}
           bgcolor={"Menu"}
           border={3}
           borderColor={"Highlight"}

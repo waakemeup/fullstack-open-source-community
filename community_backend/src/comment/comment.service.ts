@@ -9,6 +9,7 @@ import User from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import CommentTypeEnum from '../shared/enums/CommentTypeEnum';
 import LevelEnum from '../shared/enums/LevelEnum';
+import RoleEnum from '../shared/enums/RoleEnum';
 
 @Injectable()
 export class CommentService {
@@ -168,7 +169,10 @@ export class CommentService {
           id,
         },
       });
-      if (user.level !== LevelEnum.HEADER && comment.user.id !== user.id)
+      if (
+        (user.level !== LevelEnum.HEADER && comment.user.id !== user.id) ||
+        (user.role !== RoleEnum.ADMIN && comment.user.id !== user.id)
+      )
         throw new HttpException(
           'You are not header or owner',
           HttpStatus.FORBIDDEN,

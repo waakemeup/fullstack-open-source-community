@@ -241,4 +241,51 @@ export class PostService {
   //     throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
   //   }
   // }
+
+  public async getAllPostsByUserId(req: Request) {
+    try {
+      const { user } = req;
+      const posts = await this.postRepository.find({
+        relations: ['user', 'department'],
+        where: {
+          user: {
+            id: user.id,
+          },
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+      return posts;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async deletePost(req: Request, id: number) {
+    try {
+      const { user } = req;
+      const post = await this.postRepository.findOne({
+        relations: ['user', 'department'],
+        where: {
+          id,
+        },
+      });
+      if (
+        //admin、header和自己可以删除
+        (user.role !== RoleEnum.ADMIN && post.user.id !== user.id) ||
+        (user.level !== LevelEnum.HEADER && post.user.id !== user.id)
+      ) {
+        throw new HttpException(
+          'You do not have the right',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      await this.postRepository.delete(id);
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

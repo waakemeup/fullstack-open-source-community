@@ -1,3 +1,4 @@
+import Comment from "./Comment";
 import Department from "./Department";
 import PostTypeEnum from "./enums/PostTypeEnum";
 import { User } from "./User";
@@ -13,4 +14,5 @@ export default interface Post {
   type: PostTypeEnum;
   department: Department;
   user: User;
+  comments: Comment[];
 }
