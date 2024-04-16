@@ -18,6 +18,7 @@ import Post from '../post/post.entity';
 import { MyFile } from '../file/file.entity';
 import Like from '../like/like.entity';
 import Comment from '../comment/comment.entity';
+import Notice from '../notice/notice.entity';
 
 @Entity()
 export default class User extends AbstractEntity {
@@ -76,4 +77,7 @@ export default class User extends AbstractEntity {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   public comments: Comment[];
+
+  @OneToMany(() => Notice, (notice) => notice.publisher)
+  public notices: Notice[];
 }

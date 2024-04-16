@@ -13,6 +13,7 @@ import User from '../user/user.entity';
 import { Exclude, Expose } from 'class-transformer';
 import Post from '../post/post.entity';
 import { MyFile } from '../file/file.entity';
+import Notice from '../notice/notice.entity';
 
 @Entity()
 export default class Department extends AbstractEntity {
@@ -66,6 +67,9 @@ export default class Department extends AbstractEntity {
 
   @OneToMany(() => MyFile, (file) => file.department)
   public files: MyFile[];
+
+  @OneToMany(() => Notice, (notice) => notice.department)
+  public notices: Notice[];
 
   @Expose({
     name: 'userId',

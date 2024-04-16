@@ -12,6 +12,7 @@ import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
 import { FileModule } from './file/file.module';
+import { NoticeModule } from './notice/notice.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { FileModule } from './file/file.module';
     CommentModule,
     LikeModule,
     FileModule,
+    NoticeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
