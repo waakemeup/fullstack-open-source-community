@@ -21,7 +21,7 @@ export class NoticeService {
   public async createNotice(req: Request, data: CreateNoticeDTO) {
     try {
       const { user } = req;
-      if (user.level !== LevelEnum.HEADER || user.role !== RoleEnum.ADMIN)
+      if (user.level !== LevelEnum.HEADER && user.role !== RoleEnum.ADMIN)
         throw new HttpException(
           'You do not have the right',
           HttpStatus.FORBIDDEN,
@@ -39,6 +39,7 @@ export class NoticeService {
       await this.noticeRepository.save(newNotice);
       return newNotice;
     } catch (error) {
+      console.log(error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
@@ -62,7 +63,7 @@ export class NoticeService {
   public async deleteNotice(req: Request, id: number) {
     try {
       const { user } = req;
-      if (user.role !== RoleEnum.ADMIN || user.level !== LevelEnum.HEADER)
+      if (user.role !== RoleEnum.ADMIN && user.level !== LevelEnum.HEADER)
         throw new HttpException(
           'You do not have the right',
           HttpStatus.FORBIDDEN,
@@ -98,7 +99,7 @@ export class NoticeService {
       const { user } = req;
       const { body, department, title } = data;
 
-      if (user.role !== RoleEnum.ADMIN || user.level !== LevelEnum.HEADER)
+      if (user.role !== RoleEnum.ADMIN && user.level !== LevelEnum.HEADER)
         throw new HttpException(
           'You do not have the right',
           HttpStatus.FORBIDDEN,
@@ -114,6 +115,29 @@ export class NoticeService {
       });
     } catch (error) {
       console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // id:department_id
+  public async getAllNoticesInDepartmentById(req: Request, id: number) {
+    try {
+      const { user } = req;
+      if (user.level !== LevelEnum.HEADER)
+        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      const notices = await this.noticeRepository.find({
+        relations: ['department', 'publisher'],
+        where: {
+          department: {
+            id,
+          },
+        },
+        order: {
+          createdAt: 'ASC',
+        },
+      });
+      return notices;
+    } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }

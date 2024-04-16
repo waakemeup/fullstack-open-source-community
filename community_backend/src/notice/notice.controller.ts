@@ -54,4 +54,13 @@ export class NoticeController {
   ) {
     return await this.noticeService.updateNoticeById(req, id, data);
   }
+
+  @Get('header/all/:id')
+  @UseGuards(JwtAuthGuard)
+  public async getAllNoticesInDepartmentById(
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
+    return await this.noticeService.getAllNoticesInDepartmentById(req, id);
+  }
 }
