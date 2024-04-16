@@ -3,13 +3,24 @@ import {
   KeyboardArrowRightRounded,
 } from "@mui/icons-material";
 
-import { Avatar, Box, Button, Pagination, Paper } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Grid,
+  Link,
+  Pagination,
+  Paper,
+  Stack,
+} from "@mui/material";
 import Carousel from "nuka-carousel";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import useSWR from "swr";
 import Department from "../../../types/Department";
 import "./index.scss";
+import Notice from "../../../types/Notice";
+import moment from "moment";
 
 interface Props {}
 
@@ -21,11 +32,23 @@ const StuMain: React.FC<Props> = () => {
     }
   );
 
+  const { data: notices } = useSWR<Notice[]>("notice/all", {
+    suspense: true,
+  });
+
   // useEffect(() => {
   //   console.log(departmentsData);
   // });
 
   const [page, setPage] = useState<number>(1);
+  const [noticePage, setNoticePage] = useState<number>(1);
+  const handleChangeNotice = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setNoticePage(value);
+  };
+
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
@@ -33,13 +56,17 @@ const StuMain: React.FC<Props> = () => {
   const navigate = useNavigate();
 
   const [departmentsByPage, setDepartmentsByPage] = useState<Department[]>();
+  const [noticesByPage, setNoticesByPage] = useState<Notice[]>();
 
   useEffect(() => {
-    console.log(departmentsData);
+    // console.log(departmentsData);
     setDepartmentsByPage(
       departmentsData?.slice((page - 1) * 12, (page - 1) * 12 + 12)
     );
-  }, [page, departmentsData]);
+    setNoticesByPage(
+      notices?.slice((noticePage - 1) * 8, (noticePage - 1) * 8 + 8)
+    );
+  }, [page, departmentsData, noticePage, notices]);
 
   return (
     <>
@@ -85,44 +112,134 @@ const StuMain: React.FC<Props> = () => {
           flexDirection={"row"}
           flexGrow={"1"}
           alignItems={"center"}
-          justifyContent={"space-around"}
+          justifyContent={"space-between"}
           sx={{
             marginTop: "2rem",
           }}
+          flexWrap={"wrap"}
         >
-          <Paper>
+          <Paper sx={{ minWidth: "45vw" }}>
             <Box sx={{ padding: 3 }}>
               {/* <div>123</div> */}
-              <Button variant="contained" sx={{ borderRadius: 100 }}>
+              <Button
+                variant="contained"
+                sx={{ borderRadius: 100, marginBottom: "1rem" }}
+              >
                 社团资讯
               </Button>
-              {
-                // TODO:社团资讯map
-              }
-              <Box
-                display={"flex"}
-                flexDirection={"column"}
-                alignItems={"center"}
-              >
-                <Box
-                  display="flex"
-                  flexDirection={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
+              <Stack direction={"column"} spacing={1}>
+                <Grid
+                  container
+                  direction={"row"}
+                  spacing={2}
+                  sx={{
+                    fontWeight: "bold",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                  }}
                 >
-                  <div style={{ paddingRight: "3rem" }}>社团资讯内容</div>
-                  <div>时间</div>
-                </Box>
-                <Box
-                  display="flex"
-                  flexDirection={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                >
-                  <div style={{ paddingRight: "3rem" }}>社团资讯内容</div>
-                  <div>时间</div>
-                </Box>
-              </Box>
+                  <Grid item xs={3}>
+                    <div
+                      style={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {"社团名"}
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div
+                      style={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {"公告标题"}
+                    </div>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <div
+                      style={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {"最近更新时间"}
+                    </div>
+                  </Grid>
+                </Grid>
+                {
+                  // TODO:社团资讯map
+                  noticesByPage?.map((notice) => {
+                    return (
+                      <Grid
+                        key={notice.id}
+                        container
+                        direction={"row"}
+                        spacing={2}
+                        sx={{
+                          fontWeight: "bold",
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        <Grid item xs={3}>
+                          <div
+                            style={{
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {notice.department.name}
+                          </div>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Link
+                            href={`/stu/notice/${notice.id}`}
+                            sx={{
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              color: "black",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {notice.title}
+                          </Link>
+                        </Grid>
+                        <Grid item xs={3}>
+                          <div
+                            style={{
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {moment(notice.updatedAt).format("YYYY-MM-DD")}
+                          </div>
+                        </Grid>
+                      </Grid>
+                    );
+                  })
+                }
+                <Pagination
+                  count={Math.ceil((notices?.length as number) / 8)}
+                  page={noticePage}
+                  onChange={handleChangeNotice}
+                  variant="outlined"
+                  color="primary"
+                  sx={{
+                    marginTop: "2rem",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                />
+              </Stack>
             </Box>
           </Paper>
 
