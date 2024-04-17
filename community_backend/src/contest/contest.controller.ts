@@ -60,4 +60,13 @@ export class ContestController {
   ) {
     return await this.contestService.updateContestById(req, id, data);
   }
+
+  @Get('department/:id')
+  @UseGuards(JwtAuthGuard)
+  public async getContestInDepartment(
+    @Req() req: Request,
+    @Param('id') id: number,
+  ) {
+    return await this.contestService.getContestByDepartmentId(req, id);
+  }
 }

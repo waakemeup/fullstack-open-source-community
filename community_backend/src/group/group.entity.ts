@@ -17,7 +17,7 @@ export class Group extends AbstractEntity {
 
   @ManyToOne(() => Contest, (contest) => contest.groups, {
     eager: true,
-    onDelete: 'CASCADE',
+    // onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'contest_id', referencedColumnName: 'id' })
   public contest: Contest;
@@ -25,7 +25,7 @@ export class Group extends AbstractEntity {
   // 创建者
   @ManyToOne(() => User, (user) => user.ownGroups, {
     eager: true,
-    onDelete: 'CASCADE',
+    // onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'creator_id', referencedColumnName: 'id' })
   public creator: User;

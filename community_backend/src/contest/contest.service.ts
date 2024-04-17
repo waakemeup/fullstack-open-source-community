@@ -138,4 +138,25 @@ export class ContestService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  // stu have right
+  public async getContestByDepartmentId(req: Request, id: number) {
+    try {
+      const { user } = req;
+      const contestsInDepartment = await this.contestRepository.find({
+        relations: ['department', 'publisher'],
+        where: {
+          department: {
+            id,
+          },
+        },
+        order: {
+          updatedAt: 'DESC',
+        },
+      });
+      return contestsInDepartment;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

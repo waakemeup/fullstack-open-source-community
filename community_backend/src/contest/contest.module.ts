@@ -10,5 +10,6 @@ import { DepartmentModule } from '../department/department.module';
   imports: [TypeOrmModule.forFeature([Contest]), UserModule, DepartmentModule],
   providers: [ContestService],
   controllers: [ContestController],
+  exports: [ContestService],
 })
 export class ContestModule {}

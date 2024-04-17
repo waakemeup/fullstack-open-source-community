@@ -7,6 +7,12 @@ import {
   Paper,
   Stack,
   Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Tabs,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -17,6 +23,9 @@ import SinglePost from "../../../components/post/SinglePost";
 import Department from "../../../types/Department";
 import Post from "../../../types/Post";
 import FileUpload from "../../../components/FileUploader/FileUploader";
+import Contest from "../../../types/Contest";
+import moment from "moment";
+import CreateGroupModal from "../../../components/Modals/CreateGroupModal";
 
 interface Props {}
 
@@ -136,6 +145,16 @@ const RealDepartment: React.FC<Props> = () => {
     await discuss_posts_mutate();
   };
 
+  const { data: contests } = useSWR<Contest[]>(`contest/department/${id}`, {
+    suspense: true,
+  });
+
+  const [selectedContestId, setSelectedContestId] = useState<number>();
+  const [showCreateGroupModal, setShowCreateGroupModal] =
+    useState<boolean>(false);
+
+  // console.log(contests);
+
   return (
     <>
       {/* <div>RealDepartment</div> */}
@@ -144,6 +163,11 @@ const RealDepartment: React.FC<Props> = () => {
         handleClose={() => setShowPostingModal(!showPostingModal)}
         departmentName={department!.name}
         mutate={mutate}
+      />
+      <CreateGroupModal
+        open={showCreateGroupModal}
+        handleClose={() => setShowCreateGroupModal(!showCreateGroupModal)}
+        id={selectedContestId}
       />
       <Paper
         sx={{
@@ -237,7 +261,85 @@ const RealDepartment: React.FC<Props> = () => {
             />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-            Item Three
+            {/* TODO:组队参赛 */}
+            <Stack direction={"column"} spacing={2}>
+              <Button disabled>社团内所有比赛</Button>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>id</TableCell>
+                      <TableCell align="right">比赛标题</TableCell>
+                      <TableCell align="right">比赛发布者</TableCell>
+                      <TableCell align="right">结束时间</TableCell>
+                      <TableCell align="right">操作</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {contests?.map((contest) => (
+                      <TableRow
+                        key={contest.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {contest.id}
+                        </TableCell>
+                        <TableCell
+                          align="right"
+                          sx={{
+                            width: "30%",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            // whiteSpace: "nowrap",
+                          }}
+                        >
+                          {contest.title}
+                        </TableCell>
+                        <TableCell align="right">
+                          {contest.publisher?.username}
+                        </TableCell>
+                        <TableCell align="right">
+                          {moment(contest.endDate).format("YYYY-MM-DD")}
+                        </TableCell>
+                        <TableCell align="right">
+                          {moment(contest.endDate).isBefore() ? (
+                            <Button color="warning">已经结束</Button>
+                          ) : (
+                            <>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                  setSelectedContestId(contest.id);
+                                  setShowCreateGroupModal(
+                                    !showCreateGroupModal
+                                  );
+                                }}
+                              >
+                                创建队伍
+                              </Button>
+
+                              <Button
+                                variant="contained"
+                                color="success"
+                                onClick={() => {
+                                  setSelectedContestId(contest.id);
+                                  // setShowEditContestModal(!showEditContestModal);
+                                }}
+                              >
+                                查询队伍
+                              </Button>
+                            </>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Stack>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
             <Box>
