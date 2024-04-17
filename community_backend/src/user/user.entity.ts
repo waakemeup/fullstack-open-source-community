@@ -19,6 +19,8 @@ import { MyFile } from '../file/file.entity';
 import Like from '../like/like.entity';
 import Comment from '../comment/comment.entity';
 import Notice from '../notice/notice.entity';
+import { Contest } from '../contest/contest.entity';
+import { Group } from '../group/group.entity';
 
 @Entity()
 export default class User extends AbstractEntity {
@@ -80,4 +82,13 @@ export default class User extends AbstractEntity {
 
   @OneToMany(() => Notice, (notice) => notice.publisher)
   public notices: Notice[];
+
+  @OneToMany(() => Contest, (contest) => contest.publisher)
+  public contests: Contest[];
+
+  @OneToMany(() => Group, (group) => group.creator)
+  public ownGroups: Group[];
+
+  @ManyToMany(() => Group, (group) => group.users)
+  public joinGroups: Group[];
 }

@@ -13,6 +13,8 @@ import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
 import { FileModule } from './file/file.module';
 import { NoticeModule } from './notice/notice.module';
+import { ContestModule } from './contest/contest.module';
+import { GroupModule } from './group/group.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { NoticeModule } from './notice/notice.module';
     LikeModule,
     FileModule,
     NoticeModule,
+    ContestModule,
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],
