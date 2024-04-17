@@ -12,6 +12,7 @@ import {
   Pagination,
   Paper,
   Stack,
+  useMediaQuery,
 } from "@mui/material";
 import Carousel from "nuka-carousel";
 import { useEffect, useState } from "react";
@@ -21,6 +22,7 @@ import Department from "../../../types/Department";
 import "./index.scss";
 import Notice from "../../../types/Notice";
 import moment from "moment";
+import Contest from "../../../types/Contest";
 
 interface Props {}
 
@@ -36,17 +38,29 @@ const StuMain: React.FC<Props> = () => {
     suspense: true,
   });
 
+  const { data: contests } = useSWR<Contest[]>("contest/all", {
+    suspense: true,
+  });
+
   // useEffect(() => {
   //   console.log(departmentsData);
   // });
 
   const [page, setPage] = useState<number>(1);
   const [noticePage, setNoticePage] = useState<number>(1);
+  const [contestPage, setContestPage] = useState<number>(1);
   const handleChangeNotice = (
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
     setNoticePage(value);
+  };
+
+  const handleChangeContest = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setContestPage(value);
   };
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -57,6 +71,7 @@ const StuMain: React.FC<Props> = () => {
 
   const [departmentsByPage, setDepartmentsByPage] = useState<Department[]>();
   const [noticesByPage, setNoticesByPage] = useState<Notice[]>();
+  const [contestsByPage, setContestsByPage] = useState<Contest[]>();
 
   useEffect(() => {
     // console.log(departmentsData);
@@ -66,7 +81,12 @@ const StuMain: React.FC<Props> = () => {
     setNoticesByPage(
       notices?.slice((noticePage - 1) * 8, (noticePage - 1) * 8 + 8)
     );
-  }, [page, departmentsData, noticePage, notices]);
+    setContestsByPage(
+      contests?.slice((contestPage - 1) * 8, (contestPage - 1) * 8 + 8)
+    );
+  }, [page, departmentsData, noticePage, notices, contestPage, contests]);
+
+  const isWrap = useMediaQuery("(max-width:900px)");
 
   return (
     <>
@@ -112,15 +132,14 @@ const StuMain: React.FC<Props> = () => {
           flexDirection={"row"}
           flexGrow={"1"}
           alignItems={"center"}
-          justifyContent={"space-between"}
+          justifyContent={"center"}
           sx={{
             marginTop: "2rem",
           }}
-          flexWrap={"wrap"}
+          flexWrap={isWrap ? "wrap" : "nowrap"}
         >
-          <Paper sx={{ minWidth: "45vw" }}>
+          <Paper sx={{ minWidth: isWrap ? "70vw" : "45vw", margin: "1rem" }}>
             <Box sx={{ padding: 3 }}>
-              {/* <div>123</div> */}
               <Button
                 variant="contained"
                 sx={{ borderRadius: 100, marginBottom: "1rem" }}
@@ -209,7 +228,18 @@ const StuMain: React.FC<Props> = () => {
                               cursor: "pointer",
                             }}
                           >
-                            {notice.title}
+                            <div
+                              style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                                color: "black",
+                                maxWidth: "20vw",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {notice.title}
+                            </div>
                           </Link>
                         </Grid>
                         <Grid item xs={3}>
@@ -243,38 +273,136 @@ const StuMain: React.FC<Props> = () => {
             </Box>
           </Paper>
 
-          <Paper>
-            <Box sx={{ padding: 3 }}>
+          <Paper sx={{ minWidth: isWrap ? "70vw" : "45vw", margin: "1rem" }}>
+            <Box sx={{ paddingX: 3, paddingY: 4 }}>
               <Button variant="contained" sx={{ borderRadius: 100 }}>
                 社团比赛
               </Button>
-              {
-                // TODO:社团比赛map
-              }
-              <Box
-                display={"flex"}
-                flexDirection={"column"}
-                alignItems={"center"}
-              >
-                <Box
-                  display="flex"
-                  flexDirection={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
+              <Stack direction={"column"} spacing={1}>
+                <Grid
+                  container
+                  direction={"row"}
+                  spacing={2}
+                  sx={{
+                    fontWeight: "bold",
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                  }}
                 >
-                  <div style={{ paddingRight: "3rem" }}>社团资讯内容</div>
-                  <div>时间</div>
-                </Box>
-                <Box
-                  display="flex"
-                  flexDirection={"row"}
-                  alignItems={"center"}
-                  justifyContent={"space-between"}
-                >
-                  <div style={{ paddingRight: "3rem" }}>社团资讯内容</div>
-                  <div>时间</div>
-                </Box>
-              </Box>
+                  <Grid item xs={3}>
+                    <div
+                      style={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {"社团名"}
+                    </div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div
+                      style={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {"比赛标题"}
+                    </div>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <div
+                      style={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {"最近更新时间"}
+                    </div>
+                  </Grid>
+                </Grid>
+                {
+                  // TODO:社团比赛map
+                  contestsByPage?.map((contest) => {
+                    return (
+                      <Grid
+                        key={contest.id}
+                        container
+                        direction={"row"}
+                        spacing={2}
+                        sx={{
+                          fontWeight: "bold",
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        <Grid item xs={3}>
+                          <div
+                            style={{
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {contest.department.name}
+                          </div>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Link
+                            href={`/stu/contest/${contest.id}`}
+                            sx={{
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              color: "black",
+                              cursor: "pointer",
+                              maxWidth: "30vw",
+                            }}
+                          >
+                            <div
+                              style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                                color: "black",
+                                maxWidth: "20vw",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {contest.title}
+                            </div>
+                          </Link>
+                        </Grid>
+                        <Grid item xs={3}>
+                          <div
+                            style={{
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {moment(contest.updatedAt).format("YYYY-MM-DD")}
+                          </div>
+                        </Grid>
+                      </Grid>
+                    );
+                  })
+                }
+                <Pagination
+                  count={Math.ceil((contests?.length as number) / 8)}
+                  page={contestPage}
+                  onChange={handleChangeContest}
+                  variant="outlined"
+                  color="primary"
+                  sx={{
+                    marginTop: "2rem",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                />
+              </Stack>
             </Box>
           </Paper>
         </Box>

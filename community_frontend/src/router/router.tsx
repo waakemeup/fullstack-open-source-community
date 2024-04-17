@@ -23,6 +23,7 @@ import MyResources from "../views/stuViews/person/MyResources";
 import MyComments from "../views/stuViews/person/MyComments";
 import MyPosts from "../views/stuViews/person/MyPosts";
 import NoticeDetail from "../views/stuViews/notice/NoticeDetail";
+import ContestDetail from "../views/stuViews/contest/ContestDetail";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));
@@ -118,6 +119,10 @@ const router = createBrowserRouter([
       {
         element: <NoticeDetail />,
         path: "notice/:id",
+      },
+      {
+        element: <ContestDetail />,
+        path: "contest/:id",
       },
     ],
   },

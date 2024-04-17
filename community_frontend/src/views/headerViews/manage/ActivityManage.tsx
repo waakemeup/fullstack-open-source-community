@@ -363,7 +363,17 @@ const ActivityManage: React.FC<Props> = () => {
                 <TableCell component="th" scope="row">
                   {contest.id}
                 </TableCell>
-                <TableCell align="right">{contest.title}</TableCell>
+                <TableCell
+                  align="right"
+                  sx={{
+                    width: "30%",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    // whiteSpace: "nowrap",
+                  }}
+                >
+                  {contest.title}
+                </TableCell>
                 <TableCell align="right">
                   {contest.publisher?.username}
                 </TableCell>

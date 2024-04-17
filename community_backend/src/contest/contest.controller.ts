@@ -27,6 +27,12 @@ export class ContestController {
     return await this.contestService.createContest(req, data);
   }
 
+  @Get('all')
+  @UseGuards(JwtAuthGuard)
+  public async getAllContestsByStu(@Req() req: Request) {
+    return await this.contestService.getAllContestsByStu(req);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   public async getContestById(@Req() req: Request, @Param('id') id: number) {

@@ -49,6 +49,21 @@ export class ContestService {
     }
   }
 
+  public async getAllContestsByStu(req: Request) {
+    try {
+      const { user } = req;
+      const contests = await this.contestRepository.find({
+        relations: ['department', 'publisher'],
+        order: {
+          createdAt: 'ASC',
+        },
+      });
+      return contests;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   // id:department_id
   public async getAllContest(req: Request, id: number) {
     try {
@@ -88,8 +103,8 @@ export class ContestService {
   public async getContestById(req: Request, id: number) {
     try {
       const { user } = req;
-      if (user.level !== LevelEnum.HEADER)
-        throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
+      // if (user.level !== LevelEnum.HEADER)
+      // throw new HttpException('You are not header', HttpStatus.FORBIDDEN);
       const contest = await this.contestRepository.findOne({
         relations: ['department', 'publisher'],
         where: {
