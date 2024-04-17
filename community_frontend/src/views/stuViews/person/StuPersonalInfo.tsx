@@ -5,6 +5,7 @@ import KeyIcon from "@mui/icons-material/Key";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import CommentIcon from "@mui/icons-material/Comment";
 import FeedIcon from "@mui/icons-material/Feed";
+import GroupIcon from "@mui/icons-material/Group";
 
 function StuPersonalInfo() {
   const navigate = useNavigate();
@@ -128,6 +129,33 @@ function StuPersonalInfo() {
             }}
           >
             {"我的帖子"}
+          </div>
+        </Box>
+        <Box
+          sx={{ padding: "1rem", marginX: "2rem", marginBottom: "2rem" }}
+          display="flex"
+          alignItems={"center"}
+          flexDirection={"column"}
+          justifyContent={"center"}
+          onClick={() => navigate(`mygroups`)}
+          bgcolor={"Menu"}
+          border={3}
+          borderColor={"Highlight"}
+        >
+          <IconButton aria-label="post" size="large">
+            <GroupIcon />
+          </IconButton>
+          <div
+            style={{
+              marginTop: 2,
+              whiteSpace: "wrap",
+              // textOverflow: "",
+              overflow: "hidden",
+              display: "inline-block",
+              wordBreak: "break-word",
+            }}
+          >
+            {"我的组队"}
           </div>
         </Box>
       </Box>

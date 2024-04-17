@@ -24,6 +24,7 @@ import MyComments from "../views/stuViews/person/MyComments";
 import MyPosts from "../views/stuViews/person/MyPosts";
 import NoticeDetail from "../views/stuViews/notice/NoticeDetail";
 import ContestDetail from "../views/stuViews/contest/ContestDetail";
+import MyGroups from "../views/stuViews/person/MyGroups";
 // import Main from "../views/main/Main";
 
 const Main = lazy(() => import("../views/main/Main"));
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
           {
             element: <MyPosts />,
             path: "myposts",
+          },
+          {
+            element: <MyGroups />,
+            path: "mygroups",
           },
         ],
       },

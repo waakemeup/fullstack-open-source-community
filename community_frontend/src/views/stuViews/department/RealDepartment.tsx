@@ -30,6 +30,7 @@ import Group from "../../../types/Group";
 import { UserStoreContext } from "../../../store/UserStore";
 import { message } from "mui-message";
 import axios from "../../../api";
+import ShowMemberModal from "../../../components/Modals/ShowMemberModal";
 
 interface Props {}
 
@@ -173,6 +174,9 @@ const RealDepartment: React.FC<Props> = () => {
     }
   );
 
+  const [showMemberModal, setShowMemberModal] = useState<boolean>(false);
+  const [selectedGroupId, setSelectedGroupId] = useState<number>();
+
   return (
     <>
       {/* <div>RealDepartment</div> */}
@@ -186,6 +190,12 @@ const RealDepartment: React.FC<Props> = () => {
         open={showCreateGroupModal}
         handleClose={() => setShowCreateGroupModal(!showCreateGroupModal)}
         id={selectedContestId}
+        mutate={groups_mutate}
+      />
+      <ShowMemberModal
+        open={showMemberModal}
+        handleClose={() => setShowMemberModal(!showMemberModal)}
+        id={selectedGroupId}
         mutate={groups_mutate}
       />
       <Paper
@@ -414,7 +424,17 @@ const RealDepartment: React.FC<Props> = () => {
                                 ) : group.users.some(
                                     (user) => user.id === userStore.user?.id
                                   ) ? (
-                                  <Button>已在队伍中</Button>
+                                  <>
+                                    <Button color="success">已在队伍中</Button>
+                                    <Button
+                                      onClick={() => {
+                                        setShowMemberModal(!showMemberModal);
+                                        setSelectedGroupId(group.id);
+                                      }}
+                                    >
+                                      查看人员
+                                    </Button>
+                                  </>
                                 ) : group.applyUsers.some(
                                     (user) => user.id === userStore.user?.id
                                   ) ? (
