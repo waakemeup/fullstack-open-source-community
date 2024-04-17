@@ -91,4 +91,7 @@ export default class User extends AbstractEntity {
 
   @ManyToMany(() => Group, (group) => group.users)
   public joinGroups: Group[];
+
+  @ManyToMany(() => Group, (group) => group.applyUsers)
+  public applyGroups: Group[];
 }

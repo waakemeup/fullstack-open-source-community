@@ -27,7 +27,7 @@ export class UserService {
 
   public async getByEmail(email: string) {
     const user = await this.userRepository.findOne({
-      relations: ['ownDepartment'],
+      relations: ['ownDepartment', 'ownGroups', 'applyGroups', 'joinGroups'],
       where: {
         email,
       },

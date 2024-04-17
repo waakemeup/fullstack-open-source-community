@@ -28,10 +28,59 @@ export class GroupService {
         creator: userRecord,
         name,
       });
+      newGroup.users = [];
+      newGroup.applyUsers = [];
+      newGroup.users.push(userRecord);
       await this.groupRepository.save(newGroup);
+
       return newGroup;
     } catch (error) {
+      // console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // id:contest_id
+  public async queryGroupsByContest(req: Request, id: number) {
+    try {
+      const { user } = req;
+      const groups = await this.groupRepository.find({
+        contest: {
+          id,
+        },
+      });
+      // console.log(groups);
+
+      return groups;
+    } catch (error) {
       console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // group_id
+  public async applyGroup(req: Request, id: number) {
+    try {
+      const { user } = req;
+      const userRecord = await this.userService.getById(user.id);
+      const group = await this.groupRepository.findOne(id);
+      group.applyUsers.push(userRecord);
+      await this.groupRepository.save(group);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  public async unapplyGroup(req: Request, id: number) {
+    try {
+      const { user } = req;
+      // const userRecord = await this.userService.getById(user.id);
+      const group = await this.groupRepository.findOne(id);
+      group.applyUsers = group.applyUsers.filter(
+        (user1) => user1.id !== user.id,
+      );
+      await this.groupRepository.save(group);
+    } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }

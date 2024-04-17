@@ -15,7 +15,7 @@ import {
   TableRow,
   Tabs,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useParams } from "react-router";
 import useSWR from "swr";
 import PostingModal from "../../../components/Modals/PostingModal";
@@ -26,6 +26,10 @@ import FileUpload from "../../../components/FileUploader/FileUploader";
 import Contest from "../../../types/Contest";
 import moment from "moment";
 import CreateGroupModal from "../../../components/Modals/CreateGroupModal";
+import Group from "../../../types/Group";
+import { UserStoreContext } from "../../../store/UserStore";
+import { message } from "mui-message";
+import axios from "../../../api";
 
 interface Props {}
 
@@ -70,6 +74,7 @@ function a11yProps(index: number) {
 
 const RealDepartment: React.FC<Props> = () => {
   const { id } = useParams();
+  const userStore = useContext(UserStoreContext);
 
   const { data: department } = useSWR<Department>(`department/stu/find/${id}`, {
     revalidateIfStale: true,
@@ -150,10 +155,23 @@ const RealDepartment: React.FC<Props> = () => {
   });
 
   const [selectedContestId, setSelectedContestId] = useState<number>();
+  const [selectedContestId2, setSelectedContestId2] = useState<number>();
   const [showCreateGroupModal, setShowCreateGroupModal] =
     useState<boolean>(false);
 
+  const [isQuery, setIsQuery] = useState<boolean>(false);
+
   // console.log(contests);
+  const { data: groups, mutate: groups_mutate } = useSWR<Group[]>(
+    selectedContestId2 !== undefined ? `group/query/${selectedContestId2}` : "",
+    {
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateOnReconnect: true,
+      suspense: true,
+    }
+  );
 
   return (
     <>
@@ -168,6 +186,7 @@ const RealDepartment: React.FC<Props> = () => {
         open={showCreateGroupModal}
         handleClose={() => setShowCreateGroupModal(!showCreateGroupModal)}
         id={selectedContestId}
+        mutate={groups_mutate}
       />
       <Paper
         sx={{
@@ -271,6 +290,7 @@ const RealDepartment: React.FC<Props> = () => {
                       <TableCell>id</TableCell>
                       <TableCell align="right">比赛标题</TableCell>
                       <TableCell align="right">比赛发布者</TableCell>
+                      <TableCell align="right">人数</TableCell>
                       <TableCell align="right">结束时间</TableCell>
                       <TableCell align="right">操作</TableCell>
                     </TableRow>
@@ -301,6 +321,9 @@ const RealDepartment: React.FC<Props> = () => {
                           {contest.publisher?.username}
                         </TableCell>
                         <TableCell align="right">
+                          {contest.min} - {contest.max}人
+                        </TableCell>
+                        <TableCell align="right">
                           {moment(contest.endDate).format("YYYY-MM-DD")}
                         </TableCell>
                         <TableCell align="right">
@@ -325,7 +348,8 @@ const RealDepartment: React.FC<Props> = () => {
                                 variant="contained"
                                 color="success"
                                 onClick={() => {
-                                  setSelectedContestId(contest.id);
+                                  setSelectedContestId2(contest.id);
+                                  setIsQuery(true);
                                   // setShowEditContestModal(!showEditContestModal);
                                 }}
                               >
@@ -339,6 +363,108 @@ const RealDepartment: React.FC<Props> = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+              {isQuery && (
+                <Stack direction={"column"}>
+                  <Button>{"id:" + selectedContestId2}比赛组队情况</Button>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>创建人</TableCell>
+                          <TableCell align="right">队伍名</TableCell>
+                          <TableCell align="right">队伍人数</TableCell>
+                          <TableCell align="right">创建时间</TableCell>
+                          <TableCell align="right">操作</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {groups?.map((group) => {
+                          return (
+                            <TableRow
+                              key={group.id}
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell component="th" scope="row">
+                                {group.creator.name}
+                              </TableCell>
+                              <TableCell
+                                align="right"
+                                sx={{
+                                  width: "30%",
+                                  textOverflow: "ellipsis",
+                                  overflow: "hidden",
+                                  // whiteSpace: "nowrap",
+                                }}
+                              >
+                                {group.name}
+                              </TableCell>
+                              <TableCell align="right">
+                                {group.users?.length || 0}
+                              </TableCell>
+                              <TableCell align="right">
+                                {moment(group.createdAt).format("YYYY-MM-DD")}
+                              </TableCell>
+                              <TableCell align="right">
+                                {moment(group.contest.endDate).isBefore() ? (
+                                  <Button color="warning">已经结束</Button>
+                                ) : group.users.some(
+                                    (user) => user.id === userStore.user?.id
+                                  ) ? (
+                                  <Button>已在队伍中</Button>
+                                ) : group.applyUsers.some(
+                                    (user) => user.id === userStore.user?.id
+                                  ) ? (
+                                  <Button
+                                    onClick={async () => {
+                                      try {
+                                        await axios.post(
+                                          `group/unapply/${group.id}`
+                                        );
+                                        await groups_mutate();
+                                        message.info("已取消申请");
+                                      } catch (error) {
+                                        message.error("取消失败");
+                                      }
+                                    }}
+                                  >
+                                    申请中
+                                  </Button>
+                                ) : group.users.length >= group.contest.max ? (
+                                  <Button>人员已满</Button>
+                                ) : (
+                                  <>
+                                    <Button
+                                      variant="contained"
+                                      color="primary"
+                                      onClick={async () => {
+                                        try {
+                                          await axios.post(
+                                            `group/apply/${group.id}`
+                                          );
+                                          await groups_mutate();
+                                          message.info("已申请");
+                                        } catch (error) {
+                                          message.error("申请失败");
+                                        }
+                                      }}
+                                    >
+                                      申请加入
+                                    </Button>
+                                  </>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Stack>
+              )}
             </Stack>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
@@ -353,7 +479,6 @@ const RealDepartment: React.FC<Props> = () => {
             </Box>
             <Divider sx={{ marginY: 3 }} />
             <Box display={"flex"} justifyContent={"center"}>
-              {/* TODO: */}
               <Link href={`/stu/department/resources/${id}`}>
                 查看本社团所有资源
               </Link>

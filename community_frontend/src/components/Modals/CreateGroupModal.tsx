@@ -18,9 +18,15 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   id: number | null | undefined; //contest_id
+  mutate: () => void;
 }
 
-const CreateGroupModal: React.FC<Props> = ({ open, handleClose, id }) => {
+const CreateGroupModal: React.FC<Props> = ({
+  open,
+  handleClose,
+  id,
+  mutate,
+}) => {
   const [name, setName] = useState<string>("");
 
   return (
@@ -37,6 +43,7 @@ const CreateGroupModal: React.FC<Props> = ({ open, handleClose, id }) => {
                   name,
                 });
                 message.success("创建成功");
+                await mutate();
                 setName("");
                 handleClose();
               } catch (error: any) {
