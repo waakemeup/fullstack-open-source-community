@@ -78,6 +78,15 @@ export class PostController {
     return await this.postService.getAllPosts(req, page_number);
   }
 
+  @Get('all/stu/posts?pagenumber=:pagenumber')
+  @UseGuards(JwtAuthGuard)
+  public async getAllPostsStu(
+    @Req() req: Request,
+    @Param('pagenumber') page_number: number,
+  ) {
+    return await this.postService.getAllPostsStu(req, page_number);
+  }
+
   @Get('all/header/posts?pagenumber=:pagenumber')
   @UseGuards(JwtAuthGuard)
   public async getHeaderAllPosts(
@@ -91,6 +100,12 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   public async getAllPostsLength(@Req() req: Request) {
     return await this.postService.getAllPostsLength(req);
+  }
+
+  @Get('all/stu/posts&length')
+  @UseGuards(JwtAuthGuard)
+  public async getAllPostsLengthStu(@Req() req: Request) {
+    return await this.postService.getAllPostsLengthStu(req);
   }
 
   @Get('all/header/posts&length')

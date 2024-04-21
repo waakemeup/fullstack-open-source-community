@@ -158,6 +158,25 @@ export class PostService {
     }
   }
 
+  public async getAllPostsStu(req: Request, page_number: number) {
+    try {
+      const PAGE_SIZE = 10;
+      const pageNumber = page_number;
+      const { user } = req;
+      const posts = await this.postRepository.find({
+        relations: ['department', 'user'],
+        order: {
+          updatedAt: 'DESC',
+        },
+        skip: (pageNumber - 1) * PAGE_SIZE, // 计算跳过的数据量
+        take: PAGE_SIZE, // 设置每页取得的数据数量
+      });
+      return posts;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   // Admin
   public async getHeaderAllPosts(req: Request, page_number: number) {
     try {
@@ -192,6 +211,19 @@ export class PostService {
       const { user } = req;
       if (user.role !== RoleEnum.ADMIN)
         throw new HttpException('You are not admin', HttpStatus.FORBIDDEN);
+      const posts = await this.postRepository.find({});
+      return posts.length;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  // STU
+  public async getAllPostsLengthStu(req: Request) {
+    try {
+      const { user } = req;
+      // if (user.role !== RoleEnum.ADMIN)
+      //   throw new HttpException('You are not admin', HttpStatus.FORBIDDEN);
       const posts = await this.postRepository.find({});
       return posts.length;
     } catch (error) {

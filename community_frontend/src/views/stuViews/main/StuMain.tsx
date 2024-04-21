@@ -12,6 +12,8 @@ import {
   Pagination,
   Paper,
   Stack,
+  Tab,
+  Tabs,
   useMediaQuery,
 } from "@mui/material";
 import Carousel from "nuka-carousel";
@@ -23,8 +25,43 @@ import "./index.scss";
 import Notice from "../../../types/Notice";
 import moment from "moment";
 import Contest from "../../../types/Contest";
+import Post from "../../../types/Post";
+import SinglePost from "../../../components/post/SinglePost";
 
 interface Props {}
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <div>{children}</div>
+        </Box>
+      )}
+    </div>
+  );
+}
 
 const StuMain: React.FC<Props> = () => {
   const { data: departmentsData } = useSWR<Department[]>(
@@ -87,6 +124,40 @@ const StuMain: React.FC<Props> = () => {
   }, [page, departmentsData, noticePage, notices, contestPage, contests]);
 
   const isWrap = useMediaQuery("(max-width:900px)");
+
+  const [value, setValue] = useState(0);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  const handlePageChange = async (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPageNumber(value);
+    await length_mutate();
+    await post_mutate();
+  };
+
+  const { data: posts, mutate: post_mutate } = useSWR<Post[]>(
+    `post/all/stu/postspagenumber=${pageNumber}`,
+    {
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateOnReconnect: true,
+      suspense: true,
+    }
+  );
+
+  const { data: length, mutate: length_mutate } = useSWR<number>(
+    "post/all/stu/posts&length",
+    {
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateOnReconnect: true,
+      suspense: true,
+    }
+  );
 
   return (
     <>
@@ -463,6 +534,52 @@ const StuMain: React.FC<Props> = () => {
             }}
           />
         </Box>
+
+        <Paper
+          sx={{
+            padding: "2rem",
+          }}
+          elevation={12}
+        >
+          <Box sx={{ width: "100%" }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                aria-label="basic tabs example"
+              >
+                <Tab label="所有帖子" {...a11yProps(0)} />
+              </Tabs>
+            </Box>
+            <CustomTabPanel value={value} index={0}>
+              {/* Item One */}
+              <Stack direction={"column"} spacing={2}>
+                {posts?.map((post: Post) => {
+                  return (
+                    <SinglePost
+                      key={post.id}
+                      id={post.id}
+                      post={post}
+                      postMutate={post_mutate}
+                    />
+                  );
+                })}
+              </Stack>
+              <Pagination
+                sx={{
+                  marginTop: "2rem",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+                count={Math.ceil((length as number) / 10)}
+                variant="outlined"
+                color="secondary"
+                page={pageNumber}
+                onChange={handlePageChange}
+              />
+            </CustomTabPanel>
+          </Box>
+        </Paper>
       </Box>
     </>
   );
